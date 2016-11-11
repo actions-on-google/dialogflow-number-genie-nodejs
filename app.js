@@ -127,8 +127,8 @@ app.post('/', function (request, response) {
     console.log('checkGuess');
     return new Promise(function (resolve, reject) {
       let answer = assistant.data.answer;
-      let diff = Math.abs(guess - answer);
       let guess = parseInt(assistant.getArgument(GUESS_ARGUMENT));
+      let diff = Math.abs(guess - answer);
       assistant.data.guessCount++;
       assistant.data.fallbackCount = 0;
       // Check for duplicate guesses
