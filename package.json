@@ -6,13 +6,18 @@
   "license": "Apache Version 2.0",
   "author": "Google Inc.",
   "scripts": {
+    "lint": "semistandard \"**/*.js\"",
     "start": "node app.js",
     "monitor": "nodemon app.js",
-    "deploy": "gcloud app deploy"
+    "deploy": "gcloud app deploy",
+    "test": "npm run lint"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.13.4",
     "sprintf-js": "^1.0.3"
+  },
+  "devDependencies": {
+    "semistandard": "^9.1.0"
   }
 }

@@ -25,7 +25,7 @@ let app = express();
 app.set('port', (process.env.PORT || 8080));
 app.use(bodyParser.json({type: 'application/json'}));
 
-function getRandomNumber(min, max) {
+function getRandomNumber (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -65,7 +65,6 @@ const HIGHEST_PROMPTS = ['You\'re piping hot! But it\'s still higher.',
 const CORRECT_GUESS_PROMPTS = ['Well done! It is indeed %s.', 'Congratulations, that\'s it! I was thinking of %s.',
     'You got it! It\'s %s.' ];
 const PLAY_AGAIN_QUESTION_PROMPTS = ['Wanna play again?', 'Want to try again?', 'Hey, should we do that again?'];
-const PLAY_AGAIN_PROMPTS = ['Okay, let\'s play again.', 'Okay, here we go again', 'Alright, one more time with feeling.'];
 
 const QUIT_REVEAL_PROMPTS = ['Ok, I was thinking of %s.', 'Sure, I\'ll tell you the number anyway. It was %s.'];
 const QUIT_PROMPTS = ['Alright, talk to you later then.',
@@ -73,7 +72,8 @@ const QUIT_PROMPTS = ['Alright, talk to you later then.',
 
 const GREETING_PROMPTS = ['Let\'s play Guess a number game!', 'Welcome to Guess a number game!'];
 const INVOCATION_PROMPT = ['I\'m thinking of a number from %s and %s. What\'s your first guess?'];
-const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!'];
+const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!', 'Okay, let\'s play again.', 'Okay, here we go again',
+    'Alright, one more time with feeling.'];
 const RE_INVOCATION_PROMPT = ['I\'m thinking of a number from %s and %s. What\'s your guess?'];
 
 const WRONG_DIRECTION_LOWER_PROMPTS = ['Clever, but no. It\'s still lower than %s.',
@@ -111,7 +111,7 @@ app.post('/', function (request, response) {
 
   const assistant = new Assistant({request: request, response: response});
 
-  function generateAnswer(assistant) {
+  function generateAnswer (assistant) {
     console.log('generateAnswer');
     return new Promise(function (resolve, reject) {
       var answer = getRandomNumber(MIN, MAX);
@@ -123,20 +123,21 @@ app.post('/', function (request, response) {
     });
   }
 
-  function checkGuess(assistant) {
+  function checkGuess (assistant) {
     console.log('checkGuess');
     return new Promise(function (resolve, reject) {
       let answer = assistant.data.answer;
+      let diff = Math.abs(guess - answer);
       let guess = parseInt(assistant.getArgument(GUESS_ARGUMENT));
       assistant.data.guessCount++;
       assistant.data.fallbackCount = 0;
       // Check for duplicate guesses
-      if (assistant.data.previousGuess && guess == assistant.data.previousGuess) {
+      if (assistant.data.previousGuess && guess === assistant.data.previousGuess) {
         assistant.data.duplicateCount++;
-        if (assistant.data.duplicateCount == 1) {
+        if (assistant.data.duplicateCount === 1) {
           resolve(assistant.ask(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_1), guess, assistant.data.hint)));
           return;
-        } else if (assistant.data.duplicateCount == 2) {
+        } else if (assistant.data.duplicateCount === 2) {
           resolve(assistant.tell(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_2), guess)));
           return;
         }
@@ -153,13 +154,13 @@ app.post('/', function (request, response) {
         }
       }
       // Handle boundaries with special prompts
-      if (answer != guess) {
-        if (guess == MIN) {
+      if (answer !== guess) {
+        if (guess === MIN) {
           assistant.data.hint = HIGHER_HINT;
           assistant.data.previousGuess = guess;
           resolve(assistant.ask(sprintf(getRandomPrompt(MIN_PROMPTS), MIN)));
           return;
-        } else if (guess == MAX) {
+        } else if (guess === MAX) {
           assistant.data.hint = LOWER_HINT;
           assistant.data.previousGuess = guess;
           resolve(assistant.ask(sprintf(getRandomPrompt(MAX_PROMPTS), MAX)));
@@ -167,7 +168,7 @@ app.post('/', function (request, response) {
         }
       }
       // Give different responses based on distance from number
-      if (Math.abs(guess-answer) > 75) {
+      if (diff > 75) {
         // Guess is far away from number
         if (answer > guess) {
           assistant.data.hint = HIGHER_HINT;
@@ -180,7 +181,7 @@ app.post('/', function (request, response) {
           resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess)));
           return;
         }
-      } else if (Math.abs(guess-answer) == 4) {
+      } else if (diff === 4) {
         // Guess is getting closer
         if (answer > guess) {
           assistant.data.hint = NO_HINT;
@@ -193,7 +194,7 @@ app.post('/', function (request, response) {
           resolve(assistant.ask(sprintf(getRandomPrompt(LOW_CLOSE_PROMPTS))));
           return;
         }
-      } else if (Math.abs(guess-answer) == 3) {
+      } else if (diff === 3) {
         // Guess is even closer
         if (answer > guess) {
           assistant.data.hint = HIGHER_HINT;
@@ -206,7 +207,7 @@ app.post('/', function (request, response) {
           resolve(assistant.ask(sprintf(getRandomPrompt(LOWEST_PROMPTS))));
           return;
         }
-      } else if (Math.abs(guess-answer) <= 10 && Math.abs(guess-answer) > 4) {
+      } else if (diff <= 10 && diff > 4) {
         // Guess is nearby number
         if (answer > guess) {
           assistant.data.hint = HIGHER_HINT;
@@ -225,7 +226,7 @@ app.post('/', function (request, response) {
         let previousHint = assistant.data.hint;
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        if (previousHint && previousHint === HIGHER_HINT && Math.abs(guess-answer) <= 2) {
+        if (previousHint && previousHint === HIGHER_HINT && diff <= 2) {
           // Very close to number
           resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS))));
           return;
@@ -237,7 +238,7 @@ app.post('/', function (request, response) {
         let previousHint = assistant.data.hint;
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        if (previousHint && previousHint === LOWER_HINT && Math.abs(guess-answer) <= 2) {
+        if (previousHint && previousHint === LOWER_HINT && diff <= 2) {
           // Very close to number
           resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_LOW_PROMPTS))));
           return;
@@ -263,7 +264,7 @@ app.post('/', function (request, response) {
     });
   }
 
-  function quit(assistant) {
+  function quit (assistant) {
     console.log('quit');
     return new Promise(function (resolve, reject) {
       let answer = assistant.data.answer;
@@ -271,7 +272,7 @@ app.post('/', function (request, response) {
     });
   }
 
-  function playAgainYes(assistant) {
+  function playAgainYes (assistant) {
     console.log('playAgainYes');
     return new Promise(function (resolve, reject) {
       var answer = getRandomNumber(MIN, MAX);
@@ -282,7 +283,7 @@ app.post('/', function (request, response) {
     });
   }
 
-  function playAgainNo(assistant) {
+  function playAgainNo (assistant) {
     console.log('playAgainNo');
     return new Promise(function (resolve, reject) {
       assistant.setContext(GAME_CONTEXT, 1);
@@ -290,12 +291,12 @@ app.post('/', function (request, response) {
     });
   }
 
-  function defaultFallback(assistant) {
+  function defaultFallback (assistant) {
     console.log('defaultFallback');
     return new Promise(function (resolve, reject) {
       assistant.data.fallbackCount++;
       // Provide two prompts before ending game
-      if (assistant.data.fallbackCount == 1) {
+      if (assistant.data.fallbackCount === 1) {
         assistant.setContext(DONE_YES_NO_CONTEXT);
         resolve(assistant.ask(sprintf(getRandomPrompt(FALLBACK_PROMPT_1))));
       } else {
@@ -304,7 +305,7 @@ app.post('/', function (request, response) {
     });
   }
 
-  function doneYes(assistant) {
+  function doneYes (assistant) {
     console.log('doneYes');
     return new Promise(function (resolve, reject) {
       assistant.setContext(GAME_CONTEXT, 1);
@@ -312,7 +313,7 @@ app.post('/', function (request, response) {
     });
   }
 
-  function doneNo(assistant) {
+  function doneNo (assistant) {
     console.log('doneNo');
     return new Promise(function (resolve, reject) {
       assistant.data.fallbackCount = 0;
