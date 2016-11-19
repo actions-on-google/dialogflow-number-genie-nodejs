@@ -16,7 +16,7 @@
 'use strict';
 
 process.env.DEBUG = 'actions-on-google:*';
-let Assistant = require('actions-on-google');
+let ApiAiAssistant = require('actions-on-google').ApiAiAssistant;
 let express = require('express');
 let bodyParser = require('body-parser');
 let sprintf = require('sprintf-js').sprintf;
@@ -109,7 +109,7 @@ app.post('/', function (request, response) {
   console.log('headers: ' + JSON.stringify(request.headers));
   console.log('body: ' + JSON.stringify(request.body));
 
-  const assistant = new Assistant({request: request, response: response});
+  const assistant = new ApiAiAssistant({request: request, response: response});
 
   function generateAnswer (assistant) {
     console.log('generateAnswer');
@@ -335,7 +335,7 @@ app.post('/', function (request, response) {
 });
 
 // Start the web server
-var server = app.listen(app.get('port'), function () {
+let server = app.listen(app.get('port'), function () {
   console.log('App listening on port %s', server.address().port);
   console.log('Press Ctrl+C to quit.');
 });

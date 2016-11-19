@@ -3,7 +3,7 @@
   "description": "Google Actions Guess a number sample for Node.js",
   "version": "0.0.1",
   "private": true,
-  "license": "Apache Version 2.0",
+  "license": "Apache-2.0",
   "author": "Google Inc.",
   "scripts": {
     "lint": "semistandard \"**/*.js\"",
@@ -12,10 +12,21 @@
     "deploy": "gcloud app deploy",
     "test": "npm run lint"
   },
+  "semistandard": {
+    "globals": [
+      "after",
+      "afterEach",
+      "before",
+      "beforeEach",
+      "describe",
+      "it"
+    ]
+  },
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.13.4",
-    "sprintf-js": "^1.0.3"
+    "sprintf-js": "^1.0.3",
+    "actions-on-google": "^1.0.0"
   },
   "devDependencies": {
     "semistandard": "^9.1.0"
