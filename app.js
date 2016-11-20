@@ -113,212 +113,196 @@ app.post('/', function (request, response) {
 
   function generateAnswer (assistant) {
     console.log('generateAnswer');
-    return new Promise(function (resolve, reject) {
-      var answer = getRandomNumber(MIN, MAX);
-      assistant.data.answer = answer;
-      assistant.data.guessCount = 0;
-      assistant.data.fallbackCount = 0;
-      resolve(assistant.ask(sprintf(sprintf(getRandomPrompt(GREETING_PROMPTS)) + ' ' +
-        getRandomPrompt(INVOCATION_PROMPT), MIN, MAX)));
-    });
+    let answer = getRandomNumber(MIN, MAX);
+    assistant.data.answer = answer;
+    assistant.data.guessCount = 0;
+    assistant.data.fallbackCount = 0;
+    assistant.ask(sprintf(sprintf(getRandomPrompt(GREETING_PROMPTS)) + ' ' +
+      getRandomPrompt(INVOCATION_PROMPT), MIN, MAX));
   }
 
   function checkGuess (assistant) {
     console.log('checkGuess');
-    return new Promise(function (resolve, reject) {
-      let answer = assistant.data.answer;
-      let guess = parseInt(assistant.getArgument(GUESS_ARGUMENT));
-      let diff = Math.abs(guess - answer);
-      assistant.data.guessCount++;
-      assistant.data.fallbackCount = 0;
-      // Check for duplicate guesses
-      if (assistant.data.previousGuess && guess === assistant.data.previousGuess) {
-        assistant.data.duplicateCount++;
-        if (assistant.data.duplicateCount === 1) {
-          resolve(assistant.ask(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_1), guess, assistant.data.hint)));
-          return;
-        } else if (assistant.data.duplicateCount === 2) {
-          resolve(assistant.tell(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_2), guess)));
-          return;
-        }
+    let answer = assistant.data.answer;
+    let guess = parseInt(assistant.getArgument(GUESS_ARGUMENT));
+    let diff = Math.abs(guess - answer);
+    assistant.data.guessCount++;
+    assistant.data.fallbackCount = 0;
+    // Check for duplicate guesses
+    if (assistant.data.previousGuess && guess === assistant.data.previousGuess) {
+      assistant.data.duplicateCount++;
+      if (assistant.data.duplicateCount === 1) {
+        assistant.ask(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_1), guess, assistant.data.hint));
+        return;
+      } else if (assistant.data.duplicateCount === 2) {
+        assistant.tell(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_2), guess));
+        return;
       }
-      assistant.data.duplicateCount = 0;
-      // Check if user isn't following hints
-      if (assistant.data.hint) {
-        if (assistant.data.hint === HIGHER_HINT && guess <= assistant.data.previousGuess) {
-          resolve(assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_HIGHER_PROMPTS), assistant.data.previousGuess)));
-          return;
-        } else if (assistant.data.hint === LOWER_HINT && guess >= assistant.data.previousGuess) {
-          resolve(assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_LOWER_PROMPTS), assistant.data.previousGuess)));
-          return;
-        }
+    }
+    assistant.data.duplicateCount = 0;
+    // Check if user isn't following hints
+    if (assistant.data.hint) {
+      if (assistant.data.hint === HIGHER_HINT && guess <= assistant.data.previousGuess) {
+        assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_HIGHER_PROMPTS), assistant.data.previousGuess));
+        return;
+      } else if (assistant.data.hint === LOWER_HINT && guess >= assistant.data.previousGuess) {
+        assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_LOWER_PROMPTS), assistant.data.previousGuess));
+        return;
       }
-      // Handle boundaries with special prompts
-      if (answer !== guess) {
-        if (guess === MIN) {
-          assistant.data.hint = HIGHER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(MIN_PROMPTS), MIN)));
-          return;
-        } else if (guess === MAX) {
-          assistant.data.hint = LOWER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(MAX_PROMPTS), MAX)));
-          return;
-        }
-      }
-      // Give different responses based on distance from number
-      if (diff > 75) {
-        // Guess is far away from number
-        if (answer > guess) {
-          assistant.data.hint = HIGHER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess)));
-          return;
-        } else if (answer < guess) {
-          assistant.data.hint = LOWER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess)));
-          return;
-        }
-      } else if (diff === 4) {
-        // Guess is getting closer
-        if (answer > guess) {
-          assistant.data.hint = NO_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(HIGH_CLOSE_PROMPTS))));
-          return;
-        } else if (answer < guess) {
-          assistant.data.hint = NO_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(LOW_CLOSE_PROMPTS))));
-          return;
-        }
-      } else if (diff === 3) {
-        // Guess is even closer
-        if (answer > guess) {
-          assistant.data.hint = HIGHER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(HIGHEST_PROMPTS))));
-          return;
-        } else if (answer < guess) {
-          assistant.data.hint = LOWER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(LOWEST_PROMPTS))));
-          return;
-        }
-      } else if (diff <= 10 && diff > 4) {
-        // Guess is nearby number
-        if (answer > guess) {
-          assistant.data.hint = HIGHER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(HIGHER_PROMPTS), guess)));
-          return;
-        } else if (answer < guess) {
-          assistant.data.hint = LOWER_HINT;
-          assistant.data.previousGuess = guess;
-          resolve(assistant.ask(sprintf(getRandomPrompt(LOWER_PROMPTS), guess)));
-          return;
-        }
-      }
-      // Give hints on which direction to go
-      if (answer > guess) {
-        let previousHint = assistant.data.hint;
+    }
+    // Handle boundaries with special prompts
+    if (answer !== guess) {
+      if (guess === MIN) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        if (previousHint && previousHint === HIGHER_HINT && diff <= 2) {
-          // Very close to number
-          resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS))));
-          return;
-        } else {
-          resolve(assistant.ask(sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT)));
-          return;
-        }
-      } else if (answer < guess) {
-        let previousHint = assistant.data.hint;
+        assistant.ask(sprintf(getRandomPrompt(MIN_PROMPTS), MIN));
+        return;
+      } else if (guess === MAX) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        if (previousHint && previousHint === LOWER_HINT && diff <= 2) {
-          // Very close to number
-          resolve(assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_LOW_PROMPTS))));
-          return;
-        } else {
-          resolve(assistant.ask(sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT)));
-          return;
-        }
-      } else {
-        // Guess is same as number
-        let guessCount = assistant.data.guessCount;
-        assistant.data.hint = NO_HINT;
-        assistant.data.previousGuess = -1;
-        assistant.setContext(YES_NO_CONTEXT);
-        assistant.data.guessCount = 0;
-        if (guessCount >= 10) {
-          resolve(assistant.ask(sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer)));
-          return;
-        } else {
-          resolve(assistant.ask(sprintf(getRandomPrompt(CORRECT_GUESS_PROMPTS), answer) + ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS))));
-          return;
-        }
+        assistant.ask(sprintf(getRandomPrompt(MAX_PROMPTS), MAX));
+        return;
       }
-    });
+    }
+    // Give different responses based on distance from number
+    if (diff > 75) {
+      // Guess is far away from number
+      if (answer > guess) {
+        assistant.data.hint = HIGHER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess));
+        return;
+      } else if (answer < guess) {
+        assistant.data.hint = LOWER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess));
+        return;
+      }
+    } else if (diff === 4) {
+      // Guess is getting closer
+      if (answer > guess) {
+        assistant.data.hint = NO_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(HIGH_CLOSE_PROMPTS)));
+        return;
+      } else if (answer < guess) {
+        assistant.data.hint = NO_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(LOW_CLOSE_PROMPTS)));
+        return;
+      }
+    } else if (diff === 3) {
+      // Guess is even closer
+      if (answer > guess) {
+        assistant.data.hint = HIGHER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(HIGHEST_PROMPTS)));
+        return;
+      } else if (answer < guess) {
+        assistant.data.hint = LOWER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(LOWEST_PROMPTS)));
+        return;
+      }
+    } else if (diff <= 10 && diff > 4) {
+      // Guess is nearby number
+      if (answer > guess) {
+        assistant.data.hint = HIGHER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(HIGHER_PROMPTS), guess));
+        return;
+      } else if (answer < guess) {
+        assistant.data.hint = LOWER_HINT;
+        assistant.data.previousGuess = guess;
+        assistant.ask(sprintf(getRandomPrompt(LOWER_PROMPTS), guess));
+        return;
+      }
+    }
+    // Give hints on which direction to go
+    if (answer > guess) {
+      let previousHint = assistant.data.hint;
+      assistant.data.hint = HIGHER_HINT;
+      assistant.data.previousGuess = guess;
+      if (previousHint && previousHint === HIGHER_HINT && diff <= 2) {
+        // Very close to number
+        assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS)));
+        return;
+      } else {
+        assistant.ask(sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT));
+        return;
+      }
+    } else if (answer < guess) {
+      let previousHint = assistant.data.hint;
+      assistant.data.hint = LOWER_HINT;
+      assistant.data.previousGuess = guess;
+      if (previousHint && previousHint === LOWER_HINT && diff <= 2) {
+        // Very close to number
+        assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_LOW_PROMPTS)));
+        return;
+      } else {
+        assistant.ask(sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT));
+        return;
+      }
+    } else {
+      // Guess is same as number
+      let guessCount = assistant.data.guessCount;
+      assistant.data.hint = NO_HINT;
+      assistant.data.previousGuess = -1;
+      assistant.setContext(YES_NO_CONTEXT);
+      assistant.data.guessCount = 0;
+      if (guessCount >= 10) {
+        assistant.ask(sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer));
+        return;
+      } else {
+        assistant.ask(sprintf(getRandomPrompt(CORRECT_GUESS_PROMPTS), answer) + ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)));
+        return;
+      }
+    }
   }
 
   function quit (assistant) {
     console.log('quit');
-    return new Promise(function (resolve, reject) {
-      let answer = assistant.data.answer;
-      resolve(assistant.tell(sprintf(getRandomPrompt(QUIT_REVEAL_PROMPTS), answer)));
-    });
+    let answer = assistant.data.answer;
+    assistant.tell(sprintf(getRandomPrompt(QUIT_REVEAL_PROMPTS), answer));
   }
 
   function playAgainYes (assistant) {
     console.log('playAgainYes');
-    return new Promise(function (resolve, reject) {
-      var answer = getRandomNumber(MIN, MAX);
-      assistant.data.answer = answer;
-      assistant.data.guessCount = 0;
-      assistant.data.fallbackCount = 0;
-      resolve(assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(RE_INVOCATION_PROMPT), MIN, MAX)));
-    });
+    let answer = getRandomNumber(MIN, MAX);
+    assistant.data.answer = answer;
+    assistant.data.guessCount = 0;
+    assistant.data.fallbackCount = 0;
+    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(RE_INVOCATION_PROMPT), MIN, MAX));
   }
 
   function playAgainNo (assistant) {
     console.log('playAgainNo');
-    return new Promise(function (resolve, reject) {
-      assistant.setContext(GAME_CONTEXT, 1);
-      resolve(assistant.tell(sprintf(getRandomPrompt(QUIT_PROMPTS))));
-    });
+    assistant.setContext(GAME_CONTEXT, 1);
+    assistant.tell(sprintf(getRandomPrompt(QUIT_PROMPTS)));
   }
 
   function defaultFallback (assistant) {
     console.log('defaultFallback');
-    return new Promise(function (resolve, reject) {
-      assistant.data.fallbackCount++;
-      // Provide two prompts before ending game
-      if (assistant.data.fallbackCount === 1) {
-        assistant.setContext(DONE_YES_NO_CONTEXT);
-        resolve(assistant.ask(sprintf(getRandomPrompt(FALLBACK_PROMPT_1))));
-      } else {
-        resolve(assistant.tell(sprintf(getRandomPrompt(FALLBACK_PROMPT_2))));
-      }
-    });
+    assistant.data.fallbackCount++;
+    // Provide two prompts before ending game
+    if (assistant.data.fallbackCount === 1) {
+      assistant.setContext(DONE_YES_NO_CONTEXT);
+      assistant.ask(sprintf(getRandomPrompt(FALLBACK_PROMPT_1)));
+    } else {
+      assistant.tell(sprintf(getRandomPrompt(FALLBACK_PROMPT_2)));
+    }
   }
 
   function doneYes (assistant) {
     console.log('doneYes');
-    return new Promise(function (resolve, reject) {
-      assistant.setContext(GAME_CONTEXT, 1);
-      resolve(assistant.tell(sprintf(getRandomPrompt(QUIT_PROMPTS))));
-    });
+    assistant.setContext(GAME_CONTEXT, 1);
+    assistant.tell(sprintf(getRandomPrompt(QUIT_PROMPTS)));
   }
 
   function doneNo (assistant) {
     console.log('doneNo');
-    return new Promise(function (resolve, reject) {
-      assistant.data.fallbackCount = 0;
-      resolve(assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT))));
-    });
+    assistant.data.fallbackCount = 0;
+    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT)));
   }
 
   let actionMap = new Map();
