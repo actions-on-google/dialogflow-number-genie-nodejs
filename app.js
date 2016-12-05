@@ -38,11 +38,13 @@ const QUIT_ACTION = 'quit';
 const PLAY_AGAIN_YES_ACTION = 'play_again_yes';
 const PLAY_AGAIN_NO_ACTION = 'play_again_no';
 const DEFAULT_FALLBACK_ACTION = 'input.unknown';
+const UNKNOWN_DEEPLINK_ACTION = 'deeplink.unknown';
 const YES_NO_CONTEXT = 'yes_no';
 const DONE_YES_NO_CONTEXT = 'done_yes_no';
 const DONE_YES_ACTION = 'done_yes';
 const DONE_NO_ACTION = 'done_no';
 const GUESS_ARGUMENT = 'guess';
+const RAW_TEXT_ARGUMENT = 'raw_text';
 
 const HIGHER_HINT = 'higher';
 const LOWER_HINT = 'lower';
@@ -70,11 +72,11 @@ const QUIT_REVEAL_PROMPTS = ['Ok, I was thinking of %s.', 'Sure, I\'ll tell you 
 const QUIT_PROMPTS = ['Alright, talk to you later then.',
     'See you later.', 'OK, I\'m already thinking of a number for next time. Bye.'];
 
-const GREETING_PROMPTS = ['Let\'s play Guess a number game!', 'Welcome to Guess a number game!'];
-const INVOCATION_PROMPT = ['I\'m thinking of a number from %s and %s. What\'s your first guess?'];
+const GREETING_PROMPTS = ['Let\'s play Number Genie!', 'Welcome to Number Genie!'];
+const INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your first guess?'];
 const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!', 'Okay, let\'s play again.', 'Okay, here we go again',
     'Alright, one more time with feeling.'];
-const RE_INVOCATION_PROMPT = ['I\'m thinking of a number from %s and %s. What\'s your guess?'];
+const RE_INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your guess?'];
 
 const WRONG_DIRECTION_LOWER_PROMPTS = ['Clever, but no. It\'s still lower than %s.',
     'Nice try, but it\'s still lower than %s.'];
@@ -96,8 +98,12 @@ const MAX_PROMPTS = ['Oh, good strategy. Start at the top. But no, it’s lower 
 
 const MANY_TRIES_PROMPTS = ['Yes! It\'s %s. Nice job!  How about one more round?'];
 
-const FALLBACK_PROMPT_1 = ['Are you done playing Guess a number game?'];
+const FALLBACK_PROMPT_1 = ['Are you done playing Number Genie?'];
 const FALLBACK_PROMPT_2 = ['We can stop here. Let’s play again soon.'];
+
+const DEEPLINK_PROMPT_1 = ['%s has %s letters. It\'s higher than %s.', '%s has %s letters, but the number is higher than %s.'];
+const DEEPLINK_PROMPT_2 = ['%s has %s letters. It\'s lower than %s.', '%s has %s letters, but the number is lower than %s.'];
+const DEEPLINK_PROMPT_3 = ['%s has %s letters. Wow! The number I was thinking of was %s!', '%s has %s letters. Amazing! The number I was thinking of was %s!'];
 
 // Utility function to pick prompts
 function getRandomPrompt (array) {
@@ -293,6 +299,31 @@ app.post('/', function (request, response) {
     }
   }
 
+  function unhandledDeeplinks (assistant) {
+    console.log('unhandledDeeplinks');
+    let answer = getRandomNumber(MIN, MAX);
+    assistant.data.answer = answer;
+    assistant.data.guessCount = 0;
+    assistant.data.fallbackCount = 0;
+    let text = assistant.getArgument(RAW_TEXT_ARGUMENT);
+    if (text) {
+      let numberOfLetters = text.length;
+      if (numberOfLetters < answer) {
+        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_1), text, numberOfLetters, numberOfLetters));
+      } else if (numberOfLetters > answer) {
+        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_2), text, numberOfLetters, numberOfLetters));
+      } else {
+        assistant.data.hint = NO_HINT;
+        assistant.data.previousGuess = -1;
+        assistant.setContext(YES_NO_CONTEXT);
+        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_3), text, numberOfLetters, answer) +
+          ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)));
+      }
+    } else {
+      defaultFallback(assistant);
+    }
+  }
+
   function doneYes (assistant) {
     console.log('doneYes');
     assistant.setContext(GAME_CONTEXT, 1);
@@ -312,6 +343,7 @@ app.post('/', function (request, response) {
   actionMap.set(PLAY_AGAIN_YES_ACTION, playAgainYes);
   actionMap.set(PLAY_AGAIN_NO_ACTION, playAgainNo);
   actionMap.set(DEFAULT_FALLBACK_ACTION, defaultFallback);
+  actionMap.set(UNKNOWN_DEEPLINK_ACTION, unhandledDeeplinks);
   actionMap.set(DONE_YES_ACTION, doneYes);
   actionMap.set(DONE_NO_ACTION, doneNo);
 
