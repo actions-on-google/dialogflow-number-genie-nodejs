@@ -50,6 +50,13 @@ const HIGHER_HINT = 'higher';
 const LOWER_HINT = 'lower';
 const NO_HINT = 'none';
 
+const SSML_SPEAK_START = '<speak>';
+const SSML_SPEAK_END = '</speak>';
+const COLD_WIND_AUDIO = '<audio src="https://xxx/NumberGenieEarcon_ColdWind.wav">cold wind sound</audio>'
+const STEAM_ONLY_AUDIO = '<audio src="https://xxx/NumberGenieEarcon_SteamOnly.wav">steam sound</audio>'
+const STEAM_AUDIO = '<audio src="https://xxx/NumberGenieEarcons_Steam.wav">steam sound</audio>'
+const YOU_WIN_AUDIO = '<audio src="https://xxx/NumberGenieEarcons_YouWin.wav">winning sound</audio>'
+
 const ANOTHER_GUESS_PROMPT = [' What\'s your next guess?', 'Have another guess?', 'Try another.'];
 const LOW_PROMPTS = ['It\'s lower than %s.'];
 const HIGH_PROMPTS = ['It\'s higher than %s.'];
@@ -91,7 +98,7 @@ const REALLY_HOT_LOW_PROMPTS = ['Keep going.', 'So close, you\'re almost there.'
 const REALLY_HOT_HIGH_PROMPTS = ['Keep going.', 'So close, you\'re almost there.'];
 
 const SAME_GUESS_PROMPTS_1 = ['It\'s still not %s. Guess %s.'];
-const SAME_GUESS_PROMPTS_2 = ['Maybe it\'ll be %s. the next time. Let’s play again soon.'];
+const SAME_GUESS_PROMPTS_2 = ['Maybe it\'ll be %s the next time. Let’s play again soon.'];
 
 const MIN_PROMPTS = ['I see what you did there. But no, it\'s higher than %s.'];
 const MAX_PROMPTS = ['Oh, good strategy. Start at the top. But no, it’s lower than a %s.'];
@@ -176,12 +183,14 @@ app.post('/', function (request, response) {
       if (answer > guess) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess));
+        assistant.ask(SSML_SPEAK_START + COLD_WIND_AUDIO +
+          sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess) + SSML_SPEAK_END);
         return;
       } else if (answer < guess) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess));
+        assistant.ask(SSML_SPEAK_START + COLD_WIND_AUDIO +
+          sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess) + SSML_SPEAK_END);
         return;
       }
     } else if (diff === 4) {
@@ -202,12 +211,12 @@ app.post('/', function (request, response) {
       if (answer > guess) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(HIGHEST_PROMPTS)));
+        assistant.ask(sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(HIGHEST_PROMPTS)) + SSML_SPEAK_END);
         return;
       } else if (answer < guess) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(LOWEST_PROMPTS)));
+        assistant.ask(sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(LOWEST_PROMPTS)) + SSML_SPEAK_END);
         return;
       }
     } else if (diff <= 10 && diff > 4) {
@@ -231,10 +240,12 @@ app.post('/', function (request, response) {
       assistant.data.previousGuess = guess;
       if (previousHint && previousHint === HIGHER_HINT && diff <= 2) {
         // Very close to number
-        assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS)));
+        assistant.ask(SSML_SPEAK_START + STEAM_AUDIO +
+          sprintf(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS)) + SSML_SPEAK_END);
         return;
       } else {
-        assistant.ask(sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT));
+        assistant.ask(sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' '
+          + getRandomPrompt(ANOTHER_GUESS_PROMPT));
         return;
       }
     } else if (answer < guess) {
@@ -243,10 +254,12 @@ app.post('/', function (request, response) {
       assistant.data.previousGuess = guess;
       if (previousHint && previousHint === LOWER_HINT && diff <= 2) {
         // Very close to number
-        assistant.ask(sprintf(getRandomPrompt(REALLY_HOT_LOW_PROMPTS)));
+        assistant.ask(sprintf(SSML_SPEAK_START + STEAM_AUDIO +
+          getRandomPrompt(REALLY_HOT_LOW_PROMPTS)) + SSML_SPEAK_END);
         return;
       } else {
-        assistant.ask(sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' ' + getRandomPrompt(ANOTHER_GUESS_PROMPT));
+        assistant.ask(sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' '
+          + getRandomPrompt(ANOTHER_GUESS_PROMPT));
         return;
       }
     } else {
@@ -257,10 +270,13 @@ app.post('/', function (request, response) {
       assistant.setContext(YES_NO_CONTEXT);
       assistant.data.guessCount = 0;
       if (guessCount >= 10) {
-        assistant.ask(sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer));
+        assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
+          sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer) + SSML_SPEAK_END);
         return;
       } else {
-        assistant.ask(sprintf(getRandomPrompt(CORRECT_GUESS_PROMPTS), answer) + ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)));
+        assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
+          sprintf(getRandomPrompt(CORRECT_GUESS_PROMPTS), answer) + ' ' +
+          sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)) + SSML_SPEAK_END);
         return;
       }
     }
@@ -278,7 +294,8 @@ app.post('/', function (request, response) {
     assistant.data.answer = answer;
     assistant.data.guessCount = 0;
     assistant.data.fallbackCount = 0;
-    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(RE_INVOCATION_PROMPT), MIN, MAX));
+    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' '
+      + sprintf(getRandomPrompt(RE_INVOCATION_PROMPT), MIN, MAX));
   }
 
   function playAgainNo (assistant) {
@@ -307,17 +324,30 @@ app.post('/', function (request, response) {
     assistant.data.fallbackCount = 0;
     let text = assistant.getArgument(RAW_TEXT_ARGUMENT);
     if (text) {
-      let numberOfLetters = text.length;
-      if (numberOfLetters < answer) {
-        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_1), text, numberOfLetters, numberOfLetters));
-      } else if (numberOfLetters > answer) {
-        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_2), text, numberOfLetters, numberOfLetters));
+      if (isNaN(text)) {
+        // Handle "talk to number genie about frogs" by counting
+        // number of letters in the word as the guessed number
+        let numberOfLetters = text.length;
+        if (numberOfLetters < answer) {
+          assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_1), text, numberOfLetters, numberOfLetters));
+        } else if (numberOfLetters > answer) {
+          assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_2), text, numberOfLetters, numberOfLetters));
+        } else {
+          assistant.data.hint = NO_HINT;
+          assistant.data.previousGuess = -1;
+          assistant.setContext(YES_NO_CONTEXT);
+          assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
+            sprintf(getRandomPrompt(DEEPLINK_PROMPT_3), text, numberOfLetters, answer)
+            + ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)) + SSML_SPEAK_END);
+        }
       } else {
-        assistant.data.hint = NO_HINT;
-        assistant.data.previousGuess = -1;
-        assistant.setContext(YES_NO_CONTEXT);
-        assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_3), text, numberOfLetters, answer) +
-          ' ' + sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)));
+        // Easter egg to set the answer for demos
+        // Handle "talk to number genie about 55"
+        assistant.data.answer = parseInt(text);
+        assistant.data.guessCount = 0;
+        assistant.data.fallbackCount = 0;
+        assistant.ask(sprintf(sprintf(getRandomPrompt(GREETING_PROMPTS)) + ' ' +
+          getRandomPrompt(INVOCATION_PROMPT), MIN, MAX));
       }
     } else {
       defaultFallback(assistant);
@@ -333,7 +363,8 @@ app.post('/', function (request, response) {
   function doneNo (assistant) {
     console.log('doneNo');
     assistant.data.fallbackCount = 0;
-    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' + sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT)));
+    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' '
+      + sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT)));
   }
 
   let actionMap = new Map();
