@@ -1,7 +1,7 @@
-# Actions On Google Guess A Number Sample for Node.js
-=====================================================
+# Actions On Google Number Genie Sample for Node.js
+===================================================
 
-This guess a number game is an action for the Google Assistant.
+This guess a number game, called Number Genie, is an action for the Google Assistant.
 
 
 ## Setup Instructions
@@ -18,8 +18,9 @@ See the developer guide and release notes at https://developers.google.com/actio
  3. Select "Export and Import".
  4. Select "Restore from zip".
  5. Select the GuessANumber.zip file in this repo.
- 6. Host the Node.js project in this repo (We recommend Google App Engine flexible environment).
- 7. Set the "Fulfillment" webhook URL to the hosting URL.
+ 6. Host the wav files in the audio folder on a web server and modify the URL's in the app.js file.
+ 7. Host the Node.js project in this repo (We recommend Google App Engine flexible environment).
+ 8. Set the "Fulfillment" webhook URL to the hosting URL.
 
 ## Documentation
 * Actions On Google using API.ai: https://developers.google.com/actions/
