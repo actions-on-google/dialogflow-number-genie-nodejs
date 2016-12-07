@@ -113,7 +113,7 @@ const DEEPLINK_PROMPT_1 = ['%s has %s letters. It\'s higher than %s.', '%s has %
 const DEEPLINK_PROMPT_2 = ['%s has %s letters. It\'s lower than %s.', '%s has %s letters, but the number is lower than %s.'];
 const DEEPLINK_PROMPT_3 = ['%s has %s letters. Wow! The number I was thinking of was %s!', '%s has %s letters. Amazing! The number I was thinking of was %s!'];
 
-const NO_INPUT_PROMPTS = ['Sorry, say that again?', 'Sorry, that number again?', 'What was that number?'];
+const NO_INPUT_PROMPTS = ['I didn\'t hear a number', 'If you\'re still there, what\'s your guess?', 'We can stop here. Let\'s play again soon.'];
 
 // Utility function to pick prompts
 function getRandomPrompt (array) {
