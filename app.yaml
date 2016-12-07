@@ -14,4 +14,13 @@
 # [START app_yaml]
 runtime: nodejs
 env: flex
+automatic_scaling:
+  min_num_instances: 8
+  max_num_instances: 30
+  cool_down_period_sec: 480
+env_variables:
+  NODE_ENV: 'production'
+handlers:
+- url: .*
+  script: app.js
 # [END app_yaml]
