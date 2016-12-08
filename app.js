@@ -57,15 +57,15 @@ const STEAM_ONLY_AUDIO = '<audio src="https://xxx/NumberGenieEarcon_SteamOnly.wa
 const STEAM_AUDIO = '<audio src="https://xxx/NumberGenieEarcons_Steam.wav">steam sound</audio>';
 const YOU_WIN_AUDIO = '<audio src="https://xxx/NumberGenieEarcons_YouWin.wav">winning sound</audio>';
 
-const ANOTHER_GUESS_PROMPT = [' What\'s your next guess?', 'Have another guess?', 'Try another.'];
+const ANOTHER_GUESS_PROMPT = ['What\'s your next guess?', 'Have another guess?', 'Try another.'];
 const LOW_PROMPTS = ['It\'s lower than %s.'];
 const HIGH_PROMPTS = ['It\'s higher than %s.'];
 const LOW_CLOSE_PROMPTS = ['Close, but not quite!'];
 const HIGH_CLOSE_PROMPTS = ['Close, but not quite!'];
-const LOWER_PROMPTS = ['You\'re getting warm. Have another guess? It\'s lower than %s.',
+const LOWER_PROMPTS = ['You\'re getting warm.  It\'s lower than %s. Have another guess?',
     'Warmer. Take another guess that\'s lower than %s.', 'Close, but it\'s lower than %s.'];
-const HIGHER_PROMPTS = ['You\'re getting warm. Have another guess? It\'s higher than %s.',
-    'Warmer. Take another guess that\'s higher than %s.', 'Close, but it\'s higher than %s.'];
+const HIGHER_PROMPTS = ['You\'re getting warm. It\'s higher than %s. Have another guess?',
+    'Warmer. It\'s also higher than %s. Take another guess.', 'Close, but it\'s higher than %s.'];
 const LOWEST_PROMPTS = ['You\'re piping hot! But it\'s still lower.',
     'You\'re hot as lava! Go lower.', 'Almost there! A bit lower.'];
 const HIGHEST_PROMPTS = ['You\'re piping hot! But it\'s still higher.',
@@ -77,14 +77,14 @@ const PLAY_AGAIN_QUESTION_PROMPTS = ['Wanna play again?', 'Want to try again?', 
 
 const QUIT_REVEAL_PROMPTS = ['Ok, I was thinking of %s.', 'Sure, I\'ll tell you the number anyway. It was %s.'];
 const QUIT_REVEAL_BYE = ['Bye.', 'Good bye.', 'See you later.'];
-const QUIT_PROMPTS = ['Alright, talk to you later then.',
+const QUIT_PROMPTS = ['Alright, talk to you later then.', 'OK, till next time. Bye!',
     'See you later.', 'OK, I\'m already thinking of a number for next time. Bye.'];
 
 const GREETING_PROMPTS = ['Let\'s play Number Genie!', 'Welcome to Number Genie!'];
 const INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your first guess?'];
 const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!', 'Okay, let\'s play again.', 'Okay, here we go again',
     'Alright, one more time with feeling.'];
-const RE_INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your guess?'];
+const RE_INVOCATION_PROMPT = ['I\'m thinking of a new number from %s to %s. What\'s your guess?'];
 
 const WRONG_DIRECTION_LOWER_PROMPTS = ['Clever, but no. It\'s still lower than %s.',
     'Nice try, but it\'s still lower than %s.'];
@@ -107,7 +107,7 @@ const MAX_PROMPTS = ['Oh, good strategy. Start at the top. But no, it’s lower 
 const MANY_TRIES_PROMPTS = ['Yes! It\'s %s. Nice job!  How about one more round?'];
 
 const FALLBACK_PROMPT_1 = ['Are you done playing Number Genie?'];
-const FALLBACK_PROMPT_2 = ['We can stop here. Let’s play again soon.'];
+const FALLBACK_PROMPT_2 = ['Since I\'m still having trouble, so I\'ll stop here. Let’s play again soon.'];
 
 const DEEPLINK_PROMPT_1 = ['%s has %s letters. It\'s higher than %s.', '%s has %s letters, but the number is higher than %s.'];
 const DEEPLINK_PROMPT_2 = ['%s has %s letters. It\'s lower than %s.', '%s has %s letters, but the number is lower than %s.'];
