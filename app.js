@@ -46,6 +46,7 @@ const DONE_YES_ACTION = 'done_yes';
 const DONE_NO_ACTION = 'done_no';
 const GUESS_ARGUMENT = 'guess';
 const RAW_TEXT_ARGUMENT = 'raw_text';
+const REPEAT_ACTION = 'repeat';
 
 const HIGHER_HINT = 'higher';
 const LOWER_HINT = 'lower';
@@ -53,10 +54,10 @@ const NO_HINT = 'none';
 
 const SSML_SPEAK_START = '<speak>';
 const SSML_SPEAK_END = '</speak>';
-const COLD_WIND_AUDIO = '<audio src="https://xxxxxx/NumberGenieEarcon_ColdWind.wav">cold wind sound</audio>';
-const STEAM_ONLY_AUDIO = '<audio src="https://xxxxxx/NumberGenieEarcon_SteamOnly.wav">steam sound</audio>';
-const STEAM_AUDIO = '<audio src="https://xxxxxx/NumberGenieEarcons_Steam.wav">steam sound</audio>';
-const YOU_WIN_AUDIO = '<audio src="https://xxxxxx/NumberGenieEarcons_YouWin.wav">winning sound</audio>';
+const COLD_WIND_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_ColdWind.wav">cold wind sound</audio>';
+const STEAM_ONLY_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_SteamOnly.wav">steam sound</audio>';
+const STEAM_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_Steam.wav">steam sound</audio>';
+const YOU_WIN_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_YouWin.wav">winning sound</audio>';
 
 const ANOTHER_GUESS_PROMPT = ['What\'s your next guess?', 'Have another guess?', 'Try another.'];
 const LOW_PROMPTS = ['It\'s lower than %s.'];
@@ -77,11 +78,12 @@ const CORRECT_GUESS_PROMPTS = ['Well done! It is indeed %s.', 'Congratulations, 
 const PLAY_AGAIN_QUESTION_PROMPTS = ['Wanna play again?', 'Want to try again?', 'Hey, should we do that again?'];
 
 const QUIT_REVEAL_PROMPTS = ['Ok, I was thinking of %s.', 'Sure, I\'ll tell you the number anyway. It was %s.'];
-const QUIT_REVEAL_BYE = ['Bye.', 'Good bye.', 'See you later.'];
-const QUIT_PROMPTS = ['Alright, talk to you later then.', 'OK, till next time. Bye!',
-    'See you later.', 'OK, I\'m already thinking of a number for next time. Bye.'];
+const QUIT_REVEAL_BYE = ['See you later.', 'Talk to you later.'];
+const QUIT_PROMPTS = ['Alright, talk to you later then.', 'OK, till next time.',
+    'See you later.', 'OK, I\'m already thinking of a number for next time.'];
 
-const GREETING_PROMPTS = ['Let\'s play Number Genie!', 'Welcome to Number Genie!'];
+const GREETING_PROMPTS = ['Let\'s play Number Genie!', 'Welcome to Number Genie!', 'Hi! This is Number Genie.',
+    'Welcome back to Number Genie.'];
 const INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your first guess?'];
 const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!', 'Okay, let\'s play again.', 'Okay, here we go again.',
     'Alright, one more time with feeling.'];
@@ -95,26 +97,34 @@ const WRONG_DIRECTION_HIGHER_PROMPTS = ['Clever, but no. It\'s still higher than
 const REALLY_COLD_LOW_PROMPTS = ['You\'re ice cold. It\'s way lower than %s.',
     'You\'re freezing cold. It\'s a lot lower than %s.'];
 const REALLY_COLD_HIGH_PROMPTS = ['You\'re ice cold. It’s way higher than %s.',
-    'You\'re freezing cold. It\'s a lot higher than %.'];
-const REALLY_HOT_LOW_PROMPTS = ['Keep going.', 'So close, you\'re almost there.'];
-const REALLY_HOT_HIGH_PROMPTS = ['Keep going.', 'So close, you\'re almost there.'];
+    'You\'re freezing cold. It\'s a lot higher than %s.'];
+const REALLY_HOT_LOW_PROMPTS_1 = ['Almost there.', 'Very close.'];
+const REALLY_HOT_LOW_PROMPTS_2 = ['Keep going.', 'So close, you\'re almost there.'];
+const REALLY_HOT_HIGH_PROMPTS_1 = ['Almost.', 'So close.'];
+const REALLY_HOT_HIGH_PROMPTS_2 = ['Keep going.', 'Very close, you\'re almost there.'];
 
 const SAME_GUESS_PROMPTS_1 = ['It\'s still not %s. Guess %s.'];
 const SAME_GUESS_PROMPTS_2 = ['Maybe it\'ll be %s the next time. Let’s play again soon.'];
 
 const MIN_PROMPTS = ['I see what you did there. But no, it\'s higher than %s.'];
-const MAX_PROMPTS = ['Oh, good strategy. Start at the top. But no, it’s lower than a %s.'];
+const MAX_PROMPTS = ['Oh, good strategy. Start at the top. But no, it’s lower than %s.'];
 
 const MANY_TRIES_PROMPTS = ['Yes! It\'s %s. Nice job!  How about one more round?'];
 
 const FALLBACK_PROMPT_1 = ['Are you done playing Number Genie?'];
-const FALLBACK_PROMPT_2 = ['Since I\'m still having trouble, so I\'ll stop here. Let’s play again soon.'];
+const FALLBACK_PROMPT_2 = ['Since I\'m still having trouble, I\'ll stop here. Let’s play again soon.'];
 
-const DEEPLINK_PROMPT_1 = ['%s has %s letters. It\'s higher than %s.', '%s has %s letters, but the number is higher than %s.'];
-const DEEPLINK_PROMPT_2 = ['%s has %s letters. It\'s lower than %s.', '%s has %s letters, but the number is lower than %s.'];
-const DEEPLINK_PROMPT_3 = ['%s has %s letters. Wow! The number I was thinking of was %s!', '%s has %s letters. Amazing! The number I was thinking of was %s!'];
+const DEEPLINK_PROMPT_1 = ['%s has %s letters. The number I\'m thinking of is higher. Have another guess?',
+    '%s is a great guess. It has %s letters, but I\'m thinking of a higher number. What\'s your next guess?'];
+const DEEPLINK_PROMPT_2 = ['%s has %s letters. The number I\'m thinking of is lower. Have another guess?',
+    '%s is a great first guess. It has %s letters, but the number I\'m thinking of is lower. Guess again!'];
+const DEEPLINK_PROMPT_3 = ['Wow! You\'re a true Number Genie! %s has %s letters and the number I was thinking of was %s! Well done!',
+    'Amazing! You\'re a real Number Genie! %s has %s letters and the number I was thinking of was %s. Great job!'];
 
-const NO_INPUT_PROMPTS = ['I didn\'t hear a number', 'If you\'re still there, what\'s your guess?', 'We can stop here. Let\'s play again soon.'];
+const NO_INPUT_PROMPTS = ['I didn\'t hear a number', 'If you\'re still there, what\'s your guess?',
+    'We can stop here. Let\'s play again soon.'];
+
+const REPEAT_PROMPTS = ['Sure. %s.', 'OK. %s.'];
 
 // Utility function to pick prompts
 function getRandomPrompt (array) {
@@ -135,8 +145,8 @@ app.post('/', function (request, response) {
     assistant.data.guessCount = 0;
     assistant.data.fallbackCount = 0;
     assistant.data.steamSoundCount = 0;
-    assistant.ask(sprintf(sprintf(getRandomPrompt(GREETING_PROMPTS)) + ' ' +
-      getRandomPrompt(INVOCATION_PROMPT), MIN, MAX), NO_INPUT_PROMPTS);
+    ask(assistant, sprintf(sprintf(getRandomPrompt(GREETING_PROMPTS)) + ' ' +
+      getRandomPrompt(INVOCATION_PROMPT), MIN, MAX));
   }
 
   function checkGuess (assistant) {
@@ -150,7 +160,7 @@ app.post('/', function (request, response) {
     if (assistant.data.previousGuess && guess === assistant.data.previousGuess) {
       assistant.data.duplicateCount++;
       if (assistant.data.duplicateCount === 1) {
-        assistant.ask(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_1), guess, assistant.data.hint), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_1), guess, assistant.data.hint));
         return;
       } else if (assistant.data.duplicateCount === 2) {
         assistant.tell(sprintf(getRandomPrompt(SAME_GUESS_PROMPTS_2), guess));
@@ -161,10 +171,10 @@ app.post('/', function (request, response) {
     // Check if user isn't following hints
     if (assistant.data.hint) {
       if (assistant.data.hint === HIGHER_HINT && guess <= assistant.data.previousGuess) {
-        assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_HIGHER_PROMPTS), assistant.data.previousGuess), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(WRONG_DIRECTION_HIGHER_PROMPTS), assistant.data.previousGuess));
         return;
       } else if (assistant.data.hint === LOWER_HINT && guess >= assistant.data.previousGuess) {
-        assistant.ask(sprintf(getRandomPrompt(WRONG_DIRECTION_LOWER_PROMPTS), assistant.data.previousGuess), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(WRONG_DIRECTION_LOWER_PROMPTS), assistant.data.previousGuess));
         return;
       }
     }
@@ -173,12 +183,12 @@ app.post('/', function (request, response) {
       if (guess === MIN) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(MIN_PROMPTS), MIN), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(MIN_PROMPTS), MIN));
         return;
       } else if (guess === MAX) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(MAX_PROMPTS), MAX), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(MAX_PROMPTS), MAX));
         return;
       }
     }
@@ -188,14 +198,14 @@ app.post('/', function (request, response) {
       if (answer > guess) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(SSML_SPEAK_START + COLD_WIND_AUDIO +
-          sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess) + SSML_SPEAK_END, NO_INPUT_PROMPTS);
+        ask(assistant, SSML_SPEAK_START + COLD_WIND_AUDIO +
+          sprintf(getRandomPrompt(REALLY_COLD_HIGH_PROMPTS), guess) + SSML_SPEAK_END);
         return;
       } else if (answer < guess) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(SSML_SPEAK_START + COLD_WIND_AUDIO +
-          sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess) + SSML_SPEAK_END, NO_INPUT_PROMPTS);
+        ask(assistant, SSML_SPEAK_START + COLD_WIND_AUDIO +
+          sprintf(getRandomPrompt(REALLY_COLD_LOW_PROMPTS), guess) + SSML_SPEAK_END);
         return;
       }
     } else if (diff === 4) {
@@ -203,12 +213,12 @@ app.post('/', function (request, response) {
       if (answer > guess) {
         assistant.data.hint = NO_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(HIGH_CLOSE_PROMPTS)), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(HIGH_CLOSE_PROMPTS)));
         return;
       } else if (answer < guess) {
         assistant.data.hint = NO_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(LOW_CLOSE_PROMPTS)), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(LOW_CLOSE_PROMPTS)));
         return;
       }
     } else if (diff === 3) {
@@ -218,10 +228,10 @@ app.post('/', function (request, response) {
         assistant.data.previousGuess = guess;
         if (assistant.data.steamSoundCount-- <= 0) {
           assistant.data.steamSoundCount = STEAM_SOUND_GAP;
-          assistant.ask(sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(HIGHEST_PROMPTS)) +
-            SSML_SPEAK_END, NO_INPUT_PROMPTS);
+          ask(assistant, sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(HIGHEST_PROMPTS)) +
+            SSML_SPEAK_END);
         } else {
-          assistant.ask(getRandomPrompt(HIGHEST_PROMPTS));
+          ask(assistant, getRandomPrompt(HIGHEST_PROMPTS));
         }
         return;
       } else if (answer < guess) {
@@ -229,10 +239,10 @@ app.post('/', function (request, response) {
         assistant.data.previousGuess = guess;
         if (assistant.data.steamSoundCount-- <= 0) {
           assistant.data.steamSoundCount = STEAM_SOUND_GAP;
-          assistant.ask(sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(LOWEST_PROMPTS)) +
-            SSML_SPEAK_END, NO_INPUT_PROMPTS);
+          ask(assistant, sprintf(SSML_SPEAK_START + STEAM_ONLY_AUDIO + getRandomPrompt(LOWEST_PROMPTS)) +
+            SSML_SPEAK_END);
         } else {
-          assistant.ask(getRandomPrompt(LOWEST_PROMPTS));
+          ask(assistant, getRandomPrompt(LOWEST_PROMPTS));
         }
         return;
       }
@@ -241,12 +251,12 @@ app.post('/', function (request, response) {
       if (answer > guess) {
         assistant.data.hint = HIGHER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(HIGHER_PROMPTS), guess), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(HIGHER_PROMPTS), guess));
         return;
       } else if (answer < guess) {
         assistant.data.hint = LOWER_HINT;
         assistant.data.previousGuess = guess;
-        assistant.ask(sprintf(getRandomPrompt(LOWER_PROMPTS), guess), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(LOWER_PROMPTS), guess));
         return;
       }
     }
@@ -259,15 +269,19 @@ app.post('/', function (request, response) {
         // Very close to number
         if (assistant.data.steamSoundCount-- <= 0) {
           assistant.data.steamSoundCount = STEAM_SOUND_GAP;
-          assistant.ask(sprintf(SSML_SPEAK_START + STEAM_AUDIO +
-            getRandomPrompt(REALLY_HOT_HIGH_PROMPTS) + SSML_SPEAK_END, NO_INPUT_PROMPTS));
+          ask(assistant, sprintf(SSML_SPEAK_START + STEAM_AUDIO +
+            getRandomPrompt(REALLY_HOT_HIGH_PROMPTS_2) + SSML_SPEAK_END));
         } else {
-          assistant.ask(getRandomPrompt(REALLY_HOT_HIGH_PROMPTS));
+          if (diff <= 1) {
+            ask(assistant, getRandomPrompt(REALLY_HOT_HIGH_PROMPTS_1));
+          } else {
+            ask(assistant, getRandomPrompt(REALLY_HOT_HIGH_PROMPTS_2));
+          }
         }
         return;
       } else {
-        assistant.ask(sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' ' +
-          getRandomPrompt(ANOTHER_GUESS_PROMPT), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(HIGH_PROMPTS), guess) + ' ' +
+          getRandomPrompt(ANOTHER_GUESS_PROMPT));
         return;
       }
     } else if (answer < guess) {
@@ -278,15 +292,19 @@ app.post('/', function (request, response) {
         // Very close to number
         if (assistant.data.steamSoundCount-- <= 0) {
           assistant.data.steamSoundCount = STEAM_SOUND_GAP;
-          assistant.ask(sprintf(SSML_SPEAK_START + STEAM_AUDIO +
-            getRandomPrompt(REALLY_HOT_LOW_PROMPTS)) + SSML_SPEAK_END, NO_INPUT_PROMPTS);
+          ask(assistant, sprintf(SSML_SPEAK_START + STEAM_AUDIO +
+            getRandomPrompt(REALLY_HOT_LOW_PROMPTS_2)) + SSML_SPEAK_END);
         } else {
-          assistant.ask(getRandomPrompt(REALLY_HOT_LOW_PROMPTS));
+          if (diff <= 1) {
+            ask(assistant, getRandomPrompt(REALLY_HOT_LOW_PROMPTS_1));
+          } else {
+            ask(assistant, getRandomPrompt(REALLY_HOT_LOW_PROMPTS_2));
+          }
         }
         return;
       } else {
-        assistant.ask(sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' ' +
-          getRandomPrompt(ANOTHER_GUESS_PROMPT), NO_INPUT_PROMPTS);
+        ask(assistant, sprintf(getRandomPrompt(LOW_PROMPTS), guess) + ' ' +
+          getRandomPrompt(ANOTHER_GUESS_PROMPT));
         return;
       }
     } else {
@@ -297,13 +315,13 @@ app.post('/', function (request, response) {
       assistant.setContext(YES_NO_CONTEXT);
       assistant.data.guessCount = 0;
       if (guessCount >= 10) {
-        assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
-          sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer) + SSML_SPEAK_END, NO_INPUT_PROMPTS);
+        ask(assistant, SSML_SPEAK_START + YOU_WIN_AUDIO +
+          sprintf(getRandomPrompt(MANY_TRIES_PROMPTS), answer) + SSML_SPEAK_END);
         return;
       } else {
-        assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
+        ask(assistant, SSML_SPEAK_START + YOU_WIN_AUDIO +
           sprintf(getRandomPrompt(CORRECT_GUESS_PROMPTS), answer) + ' ' +
-          sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)) + SSML_SPEAK_END, NO_INPUT_PROMPTS);
+          sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)) + SSML_SPEAK_END);
         return;
       }
     }
@@ -312,7 +330,7 @@ app.post('/', function (request, response) {
   function quit (assistant) {
     console.log('quit');
     let answer = assistant.data.answer;
-    assistant.tell(sprintf(getRandomPrompt(QUIT_REVEAL_PROMPTS), answer) + getRandomPrompt(QUIT_REVEAL_BYE));
+    assistant.tell(sprintf(getRandomPrompt(QUIT_REVEAL_PROMPTS), answer) + ' ' + getRandomPrompt(QUIT_REVEAL_BYE));
   }
 
   function playAgainYes (assistant) {
@@ -322,7 +340,7 @@ app.post('/', function (request, response) {
     assistant.data.guessCount = 0;
     assistant.data.fallbackCount = 0;
     assistant.data.steamSoundCount = 0;
-    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' +
+    ask(assistant, sprintf(getRandomPrompt(RE_PROMPT)) + ' ' +
       sprintf(getRandomPrompt(RE_INVOCATION_PROMPT), MIN, MAX));
   }
 
@@ -333,12 +351,15 @@ app.post('/', function (request, response) {
   }
 
   function defaultFallback (assistant) {
-    console.log('defaultFallback');
+    console.log('defaultFallback: ' + assistant.data.fallbackCount);
+    if (assistant.data.fallbackCount === undefined) {
+      assistant.data.fallbackCount = 0;
+    }
     assistant.data.fallbackCount++;
     // Provide two prompts before ending game
     if (assistant.data.fallbackCount === 1) {
       assistant.setContext(DONE_YES_NO_CONTEXT);
-      assistant.ask(sprintf(getRandomPrompt(FALLBACK_PROMPT_1)));
+      ask(assistant, sprintf(getRandomPrompt(FALLBACK_PROMPT_1)));
     } else {
       assistant.tell(sprintf(getRandomPrompt(FALLBACK_PROMPT_2)));
     }
@@ -351,6 +372,7 @@ app.post('/', function (request, response) {
     assistant.data.guessCount = 0;
     assistant.data.fallbackCount = 0;
     assistant.data.steamSoundCount = 0;
+    assistant.setContext(GAME_CONTEXT, 1);
     let text = assistant.getArgument(RAW_TEXT_ARGUMENT);
     if (text) {
       if (isNaN(text)) {
@@ -358,15 +380,17 @@ app.post('/', function (request, response) {
         // number of letters in the word as the guessed number
         let numberOfLetters = text.length;
         if (numberOfLetters < answer) {
-          assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_1), text, numberOfLetters, numberOfLetters));
+          ask(assistant, getRandomPrompt(GREETING_PROMPTS) + ' ' +
+            sprintf(getRandomPrompt(DEEPLINK_PROMPT_1), text.toUpperCase(), numberOfLetters, numberOfLetters));
         } else if (numberOfLetters > answer) {
-          assistant.ask(sprintf(getRandomPrompt(DEEPLINK_PROMPT_2), text, numberOfLetters, numberOfLetters));
+          ask(assistant, getRandomPrompt(GREETING_PROMPTS) + ' ' +
+            sprintf(getRandomPrompt(DEEPLINK_PROMPT_2), text.toUpperCase(), numberOfLetters, numberOfLetters));
         } else {
           assistant.data.hint = NO_HINT;
           assistant.data.previousGuess = -1;
           assistant.setContext(YES_NO_CONTEXT);
-          assistant.ask(SSML_SPEAK_START + YOU_WIN_AUDIO +
-            sprintf(getRandomPrompt(DEEPLINK_PROMPT_3), text, numberOfLetters, answer) + ' ' +
+          ask(assistant, SSML_SPEAK_START + YOU_WIN_AUDIO +
+            sprintf(getRandomPrompt(DEEPLINK_PROMPT_3), text.toUpperCase(), numberOfLetters, answer) + ' ' +
             sprintf(getRandomPrompt(PLAY_AGAIN_QUESTION_PROMPTS)) + SSML_SPEAK_END);
         }
       } else {
@@ -390,8 +414,26 @@ app.post('/', function (request, response) {
   function doneNo (assistant) {
     console.log('doneNo');
     assistant.data.fallbackCount = 0;
-    assistant.ask(sprintf(getRandomPrompt(RE_PROMPT)) + ' ' +
+    ask(assistant, sprintf(getRandomPrompt(RE_PROMPT)) + ' ' +
       sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT)));
+  }
+
+  function repeat (assistant) {
+    console.log('repeat');
+    let lastPrompt = assistant.data.lastPrompt;
+    if (lastPrompt) {
+      ask(assistant, sprintf(getRandomPrompt(REPEAT_PROMPTS), lastPrompt), false);
+    } else {
+      ask(assistant, sprintf(getRandomPrompt(ANOTHER_GUESS_PROMPT)), false);
+    }
+  }
+
+  function ask (assistant, prompt, persist) {
+    console.log('ask: ' + prompt);
+    if (persist === undefined || persist) {
+      assistant.data.lastPrompt = prompt;
+    }
+    assistant.ask(prompt, NO_INPUT_PROMPTS);
   }
 
   let actionMap = new Map();
@@ -404,6 +446,7 @@ app.post('/', function (request, response) {
   actionMap.set(UNKNOWN_DEEPLINK_ACTION, unhandledDeeplinks);
   actionMap.set(DONE_YES_ACTION, doneYes);
   actionMap.set(DONE_NO_ACTION, doneNo);
+  actionMap.set(REPEAT_ACTION, repeat);
 
   assistant.handleRequest(actionMap);
 });
