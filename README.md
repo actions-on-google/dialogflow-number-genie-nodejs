@@ -17,7 +17,8 @@ See the developer guide and release notes at [https://developers.google.com/acti
  1. Select "Restore from zip". Follow the directions to restore.
  1. Select the NumberGenie.zip file in this repo.
  1. Host the wav files in the audio folder on a web server and modify the URL's in the app.js file.
- 1. Deploy this app to your preferred hosting environment (we recommend Google App Engine).
+ 1. Deploy this app to your preferred hosting environment
+ (we recommend [Google Cloud Functions](https://cloud.google.com/functions/docs/tutorials/http)).
  1. Set the "Fulfillment" webhook URL to the hosting URL.
  1. Make sure all domains are turned off.
  1. Enable Actions on Google in the Integrations.

@@ -17,13 +17,7 @@
 
 process.env.DEBUG = 'actions-on-google:*';
 let ApiAiAssistant = require('actions-on-google').ApiAiAssistant;
-let express = require('express');
-let bodyParser = require('body-parser');
 let sprintf = require('sprintf-js').sprintf;
-
-let app = express();
-app.set('port', (process.env.PORT || 8080));
-app.use(bodyParser.json({type: 'application/json'}));
 
 function getRandomNumber (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -144,8 +138,8 @@ function getRandomPrompt (assistant, array) {
   return prompt;
 }
 
-// HTTP POST request handler
-app.post('/', function (request, response) {
+// HTTP Cloud Function handler
+exports.number_genie = function (request, response) {
   console.log('headers: ' + JSON.stringify(request.headers));
   console.log('body: ' + JSON.stringify(request.body));
 
@@ -473,11 +467,4 @@ app.post('/', function (request, response) {
   actionMap.set(REPEAT_ACTION, repeat);
 
   assistant.handleRequest(actionMap);
-});
-
-// Start the web server
-let server = app.listen(app.get('port'), function () {
-  console.log('App listening on port %s', server.address().port);
-  console.log('Press Ctrl+C to quit.');
-});
-// [END app]
+};
