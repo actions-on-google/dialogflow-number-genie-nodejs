@@ -9,7 +9,7 @@
     "lint": "semistandard \"**/*.js\"",
     "start": "node app.js",
     "monitor": "nodemon app.js",
-    "deploy": "gcloud app deploy",
+    "deploy": "gcloud beta functions deploy factsAboutGoogle --trigger-http --stage-bucket <storage_bucket_name>",
     "test": "npm run lint"
   },
   "semistandard": {
