@@ -34,6 +34,8 @@ const PLAY_AGAIN_YES_ACTION = 'play_again_yes';
 const PLAY_AGAIN_NO_ACTION = 'play_again_no';
 const DEFAULT_FALLBACK_ACTION = 'input.unknown';
 const UNKNOWN_DEEPLINK_ACTION = 'deeplink.unknown';
+const NUMBER_DEEPLINK_ACTION = 'deeplink.number';
+const NUMBER_ARGUMENT = 'number';
 const YES_NO_CONTEXT = 'yes_no';
 const DONE_YES_NO_CONTEXT = 'done_yes_no';
 const DONE_YES_ACTION = 'done_yes';
@@ -48,20 +50,20 @@ const NO_HINT = 'none';
 
 const SSML_SPEAK_START = '<speak>';
 const SSML_SPEAK_END = '</speak>';
-const COLD_WIND_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_ColdWind.wav">cold wind sound</audio>';
-const STEAM_ONLY_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_SteamOnly.wav">steam sound</audio>';
-const STEAM_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_Steam.wav">steam sound</audio>';
-const YOU_WIN_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_YouWin.wav">winning sound</audio>';
+const COLD_WIND_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_ColdWind.wav">[cold wind sound]</audio>';
+const STEAM_ONLY_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcon_SteamOnly.wav">[steam sound]</audio>';
+const STEAM_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_Steam.wav">[steam sound]</audio>';
+const YOU_WIN_AUDIO = '<audio src="https://xxxxxx/numbergeniesounds/NumberGenieEarcons_YouWin.wav">[winning sound]</audio>';
 
 const ANOTHER_GUESS_PROMPTS = ['What\'s your next guess?', 'Have another guess?', 'Try another.'];
 const LOW_PROMPTS = ['It\'s lower than %s.'];
 const HIGH_PROMPTS = ['It\'s higher than %s.'];
-const LOW_CLOSE_PROMPTS = ['Close, but not quite!'];
-const HIGH_CLOSE_PROMPTS = ['Close, but not quite!'];
+const LOW_CLOSE_PROMPTS = ['It\'s so close, but not quite!'];
+const HIGH_CLOSE_PROMPTS = ['It\'s so close, but not quite!'];
 const LOWER_PROMPTS = ['You\'re getting warm.  It\'s lower than %s. Have another guess?',
-    'Warmer. Take another guess that\'s lower than %s.', 'Close, but it\'s lower than %s.'];
+    'Warmer. Take another guess that\'s lower than %s.', 'It\'s so close, but it\'s lower than %s.'];
 const HIGHER_PROMPTS = ['You\'re getting warm. It\'s higher than %s. Have another guess?',
-    'Warmer. It\'s also higher than %s. Take another guess.', 'Close, but it\'s higher than %s.'];
+    'Warmer. It\'s also higher than %s. Take another guess.', 'It\'s so close, but it\'s higher than %s.'];
 const LOWEST_PROMPTS = ['You\'re piping hot! But it\'s still lower.',
     'You\'re hot as lava! Go lower.', 'Almost there! A bit lower.'];
 const HIGHEST_PROMPTS = ['You\'re piping hot! But it\'s still higher.',
@@ -93,8 +95,8 @@ const REALLY_COLD_LOW_PROMPTS = ['You\'re ice cold. It\'s way lower than %s.',
 const REALLY_COLD_HIGH_PROMPTS = ['You\'re ice cold. It’s way higher than %s.',
     'You\'re freezing cold. It\'s a lot higher than %s.'];
 const REALLY_HOT_LOW_PROMPTS_1 = ['Almost there.', 'Very close.'];
-const REALLY_HOT_LOW_PROMPTS_2 = ['Keep going.', 'So close, you\'re almost there.'];
-const REALLY_HOT_HIGH_PROMPTS_1 = ['Almost there.', 'So close.'];
+const REALLY_HOT_LOW_PROMPTS_2 = ['Keep going.', 'It\'s so close, you\'re almost there.'];
+const REALLY_HOT_HIGH_PROMPTS_1 = ['Almost there.', 'It\'s so close.'];
 const REALLY_HOT_HIGH_PROMPTS_2 = ['Keep going.', 'Very close, you\'re almost there.'];
 
 const SAME_GUESS_PROMPTS_1 = ['It\'s still not %s. Guess %s.'];
@@ -417,6 +419,20 @@ exports.number_genie = function (request, response) {
     }
   }
 
+  function numberDeeplinks (assistant) {
+    console.log('numberDeeplinks');
+    assistant.data.guessCount = 0;
+    assistant.data.fallbackCount = 0;
+    assistant.data.steamSoundCount = 0;
+    assistant.setContext(GAME_CONTEXT, 1);
+    let number = parseInt(assistant.getArgument(NUMBER_ARGUMENT));
+    // Easter egg to set the answer for demos
+    // Handle "talk to number genie about 55"
+    assistant.data.answer = number;
+    assistant.ask(printf(getRandomPrompt(assistant, GREETING_PROMPTS) + ' ' +
+      getRandomPrompt(assistant, INVOCATION_PROMPT), MIN, MAX));
+  }
+
   function doneYes (assistant) {
     console.log('doneYes');
     assistant.setContext(GAME_CONTEXT, 1);
@@ -462,6 +478,7 @@ exports.number_genie = function (request, response) {
   actionMap.set(PLAY_AGAIN_NO_ACTION, playAgainNo);
   actionMap.set(DEFAULT_FALLBACK_ACTION, defaultFallback);
   actionMap.set(UNKNOWN_DEEPLINK_ACTION, unhandledDeeplinks);
+  actionMap.set(NUMBER_DEEPLINK_ACTION, numberDeeplinks);
   actionMap.set(DONE_YES_ACTION, doneYes);
   actionMap.set(DONE_NO_ACTION, doneNo);
   actionMap.set(REPEAT_ACTION, repeat);
