@@ -41,7 +41,6 @@ const DONE_YES_NO_CONTEXT = 'done_yes_no';
 const DONE_YES_ACTION = 'done_yes';
 const DONE_NO_ACTION = 'done_no';
 const GUESS_ARGUMENT = 'guess';
-const RAW_TEXT_ARGUMENT = 'raw_text';
 const REPEAT_ACTION = 'repeat';
 
 const HIGHER_HINT = 'higher';
@@ -380,14 +379,13 @@ exports.number_genie = function (request, response) {
   }
 
   function unhandledDeeplinks (assistant) {
-    console.log('unhandledDeeplinks');
     let answer = getRandomNumber(MIN, MAX);
     assistant.data.answer = answer;
     assistant.data.guessCount = 0;
     assistant.data.fallbackCount = 0;
     assistant.data.steamSoundCount = 0;
     assistant.setContext(GAME_CONTEXT, 1);
-    let text = assistant.getArgument(RAW_TEXT_ARGUMENT);
+    let text = assistant.getRawInput();
     if (text) {
       if (isNaN(text)) {
         // Handle "talk to number genie about frogs" by counting
