@@ -1,4 +1,4 @@
-# Actions on Google Number Genie Sample using Node.js
+# Actions on Google: Number Genie Sample using Node.js
 
 This guess a number game, called Number Genie, is an action for the Google Assistant.
 
