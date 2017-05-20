@@ -173,7 +173,7 @@ exports.number_genie = function (request, response) {
       let basicCard = app.buildBasicCard(IMAGE.INTRO.description)
         .setImage(IMAGE.INTRO.url, IMAGE.INTRO.altText);
       let richResponse = app.buildRichResponse()
-        .addSimpleResponse(prompt);
+        .addSimpleResponse(prompt)
         .addBasicCard(basicCard);
       ask(app, richResponse);
     } else {
@@ -209,10 +209,10 @@ exports.number_genie = function (request, response) {
       if (app.data.hint === HIGHER_HINT && guess <= app.data.previousGuess) {
         let prompt = printf(getRandomPrompt(app, WRONG_DIRECTION_HIGHER_PROMPTS), app.data.previousGuess);
         if (app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)) {
-          let basicCard = app.buildBasicCard(IMAGE.COOL.description);]
+          let basicCard = app.buildBasicCard(IMAGE.COOL.description)
             .setImage(IMAGE.COOL.url, IMAGE.COOL.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -225,7 +225,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.COOL.description)
             .setImage(IMAGE.COOL.url, IMAGE.COOL.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -261,7 +261,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.COLD.description)
             .setImage(IMAGE.COLD.url, IMAGE.COLD.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -278,7 +278,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.COLD.description)
             .setImage(IMAGE.COLD.url, IMAGE.COLD.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -296,7 +296,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.HOT.description)
             .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -311,7 +311,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.HOT.description)
             .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -332,7 +332,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -344,7 +344,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -363,7 +363,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -375,7 +375,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -394,7 +394,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.WARM.description)
             .setImage(IMAGE.WARM.url, IMAGE.WARM.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -409,7 +409,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.WARM.description)
             .setImage(IMAGE.WARM.url, IMAGE.WARM.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -434,7 +434,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -448,7 +448,7 @@ exports.number_genie = function (request, response) {
               let basicCard = app.buildBasicCard(IMAGE.HOT.description)
                 .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
               let richResponse = app.buildRichResponse()
-                .addSimpleResponse(prompt);
+                .addSimpleResponse(prompt)
                 .addBasicCard(basicCard);
               ask(app, richResponse);
             } else {
@@ -460,7 +460,7 @@ exports.number_genie = function (request, response) {
               let basicCard = app.buildBasicCard(IMAGE.HOT.description)
                 .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
               let richResponse = app.buildRichResponse()
-                .addSimpleResponse(prompt);
+                .addSimpleResponse(prompt)
                 .addBasicCard(basicCard);
               ask(app, richResponse);
             } else {
@@ -488,7 +488,7 @@ exports.number_genie = function (request, response) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
               .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
             let richResponse = app.buildRichResponse()
-              .addSimpleResponse(prompt);
+              .addSimpleResponse(prompt)
               .addBasicCard(basicCard);
             ask(app, richResponse);
           } else {
@@ -501,7 +501,7 @@ exports.number_genie = function (request, response) {
               let basicCard = app.buildBasicCard(IMAGE.HOT.description)
                 .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
               let richResponse = app.buildRichResponse()
-                .addSimpleResponse(prompt);
+                .addSimpleResponse(prompt)
                 .addBasicCard(basicCard);
               ask(app, richResponse);
             } else {
@@ -513,7 +513,7 @@ exports.number_genie = function (request, response) {
               let basicCard = app.buildBasicCard(IMAGE.HOT.description)
                 .setImage(IMAGE.HOT.url, IMAGE.HOT.altText);
               let richResponse = app.buildRichResponse()
-                .addSimpleResponse(prompt);
+                .addSimpleResponse(prompt)
                 .addBasicCard(basicCard);
               ask(app, richResponse);
             } else {
@@ -542,7 +542,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.WIN.description)
             .setImage(IMAGE.WIN.url, IMAGE.WIN.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
@@ -558,7 +558,7 @@ exports.number_genie = function (request, response) {
           let basicCard = app.buildBasicCard(IMAGE.WIN.description)
             .setImage(IMAGE.WIN.url, IMAGE.WIN.altText);
           let richResponse = app.buildRichResponse()
-            .addSimpleResponse(prompt);
+            .addSimpleResponse(prompt)
             .addBasicCard(basicCard);
           ask(app, richResponse);
         } else {
