@@ -137,18 +137,8 @@ const IMAGE = {
 // Utility function to pick prompts
 function getRandomPrompt (app, array) {
   let lastPrompt = app.data.lastPrompt;
-  let prompt;
-  if (lastPrompt) {
-    for (let index in array) {
-      prompt = array[index];
-      if (prompt != lastPrompt) {
-        break;
-      }
-    }
-  } else {
-    prompt = array[Math.floor(Math.random() * (array.length))];
-  }
-  return prompt;
+  let filteredArray = array.filter(x => x != lastPrompt)
+  return filteredArray[Math.floor(Math.random() * (filteredArray.length))];
 }
 
 // HTTP Cloud Function handler
