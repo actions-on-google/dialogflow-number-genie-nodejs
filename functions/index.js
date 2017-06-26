@@ -15,9 +15,12 @@
 // [START app]
 'use strict';
 
+const HOSTING_URL = 'https://<YOUR_PROJECT_ID>.firebaseapp.com';
+
 process.env.DEBUG = 'actions-on-google:*';
-let ApiAiApp = require('actions-on-google').ApiAiApp;
-let sprintf = require('sprintf-js').sprintf;
+const App = require('actions-on-google').ApiAiApp;
+const sprintf = require('sprintf-js').sprintf;
+const functions = require('firebase-functions');
 
 function getRandomNumber (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -50,10 +53,12 @@ const NO_HINT = 'none';
 const SSML_SPEAK_START = '<speak>';
 const SSML_SPEAK_END = '</speak>';
 
-const COLD_WIND_AUDIO = '<audio src="./audio/NumberGenieEarcon_ColdWind.wav"/>';
-const STEAM_ONLY_AUDIO = '<audio src="./audio/NumberGenieEarcon_SteamOnly.wav"/>';
-const STEAM_AUDIO = '<audio src="./audio/NumberGenieEarcons_Steam.wav"/>';
-const YOU_WIN_AUDIO = '<audio src="./audio/NumberGenieEarcons_YouWin.wav"/>';
+const AUDIO_BASE_URL = HOSTING_URL + '/audio';
+
+const COLD_WIND_AUDIO = '<audio src="' + AUDIO_BASE_URL + '/NumberGenieEarcon_ColdWind.wav"/>';
+const STEAM_ONLY_AUDIO = '<audio src="' + AUDIO_BASE_URL + '/NumberGenieEarcon_SteamOnly.wav"/>';
+const STEAM_AUDIO = '<audio src="' + AUDIO_BASE_URL + '/NumberGenieEarcons_Steam.wav"/>';
+const YOU_WIN_AUDIO = '<audio src="' + AUDIO_BASE_URL + '/NumberGenieEarcons_YouWin.wav"/>';
 
 const ANOTHER_GUESS_PROMPTS = ['What\'s your next guess?', 'Have another guess?', 'Try another.'];
 const LOW_PROMPTS = ['It\'s lower than %s.'];
@@ -61,39 +66,39 @@ const HIGH_PROMPTS = ['It\'s higher than %s.'];
 const LOW_CLOSE_PROMPTS = ['It\'s so close, but not quite!'];
 const HIGH_CLOSE_PROMPTS = ['It\'s so close, but not quite!'];
 const LOWER_PROMPTS = ['You\'re getting warm.  It\'s lower than %s. Have another guess?',
-    'Warmer. Take another guess that\'s lower than %s.', 'It\'s so close, but it\'s lower than %s.'];
+  'Warmer. Take another guess that\'s lower than %s.', 'It\'s so close, but it\'s lower than %s.'];
 const HIGHER_PROMPTS = ['You\'re getting warm. It\'s higher than %s. Have another guess?',
-    'Warmer. It\'s also higher than %s. Take another guess.', 'It\'s so close, but it\'s higher than %s.'];
+  'Warmer. It\'s also higher than %s. Take another guess.', 'It\'s so close, but it\'s higher than %s.'];
 const LOWEST_PROMPTS = ['You\'re piping hot! But it\'s still lower.',
-    'You\'re hot as lava! Go lower.', 'Almost there! A bit lower.'];
+  'You\'re hot as lava! Go lower.', 'Almost there! A bit lower.'];
 const HIGHEST_PROMPTS = ['You\'re piping hot! But it\'s still higher.',
-    'You\'re hot as lava! Go higher.', 'Almost there! A bit higher.'];
+  'You\'re hot as lava! Go higher.', 'Almost there! A bit higher.'];
 
 const CORRECT_GUESS_PROMPTS = ['Well done! It is indeed %s.', 'Congratulations, that\'s it! I was thinking of %s.',
-    'You got it! It\'s %s.' ];
+  'You got it! It\'s %s.' ];
 const PLAY_AGAIN_QUESTION_PROMPTS = ['Wanna play again?', 'Want to try again?', 'Hey, should we do that again?'];
 
 const QUIT_REVEAL_PROMPTS = ['Ok, I was thinking of %s.', 'Sure, I\'ll tell you the number anyway. It was %s.'];
 const QUIT_REVEAL_BYE = ['See you later.', 'Talk to you later.'];
 const QUIT_PROMPTS = ['Alright, talk to you later then.', 'OK, till next time.',
-    'See you later.', 'OK, I\'m already thinking of a number for next time.'];
+  'See you later.', 'OK, I\'m already thinking of a number for next time.'];
 
 const GREETING_PROMPTS = ['Let\'s play Number Genie!', 'Welcome to Number Genie!', 'Hi! This is Number Genie.',
-    'Welcome back to Number Genie.'];
+  'Welcome back to Number Genie.'];
 const INVOCATION_PROMPT = ['I\'m thinking of a number from %s to %s. What\'s your first guess?'];
 const RE_PROMPT = ['Great!', 'Awesome!', 'Cool!', 'Okay, let\'s play again.', 'Okay, here we go again.',
-    'Alright, one more time with feeling.'];
+  'Alright, one more time with feeling.'];
 const RE_INVOCATION_PROMPT = ['I\'m thinking of a new number from %s to %s. What\'s your guess?'];
 
 const WRONG_DIRECTION_LOWER_PROMPTS = ['Clever, but no. It\'s still lower than %s.',
-    'Nice try, but it\'s still lower than %s.'];
+  'Nice try, but it\'s still lower than %s.'];
 const WRONG_DIRECTION_HIGHER_PROMPTS = ['Clever, but no. It\'s still higher than %s.',
-    'Nice try, but it\'s still higher than %s.'];
+  'Nice try, but it\'s still higher than %s.'];
 
 const REALLY_COLD_LOW_PROMPTS = ['You\'re ice cold. It\'s way lower than %s.',
-    'You\'re freezing cold. It\'s a lot lower than %s.'];
+  'You\'re freezing cold. It\'s a lot lower than %s.'];
 const REALLY_COLD_HIGH_PROMPTS = ['You\'re ice cold. It’s way higher than %s.',
-    'You\'re freezing cold. It\'s a lot higher than %s.'];
+  'You\'re freezing cold. It\'s a lot higher than %s.'];
 const REALLY_HOT_LOW_PROMPTS_1 = ['Almost there.', 'Very close.'];
 const REALLY_HOT_LOW_PROMPTS_2 = ['Keep going.', 'It\'s so close, you\'re almost there.'];
 const REALLY_HOT_HIGH_PROMPTS_1 = ['Almost there.', 'It\'s so close.'];
@@ -112,26 +117,26 @@ const FALLBACK_PROMPT_1 = ['Are you done playing Number Genie?'];
 const FALLBACK_PROMPT_2 = ['Since I\'m still having trouble, I\'ll stop here. Let’s play again soon.'];
 
 const DEEPLINK_PROMPT_1 = ['%s has %s letters. The number I\'m thinking of is higher. Have another guess?',
-    '%s is a great guess. It has %s letters, but I\'m thinking of a higher number. What\'s your next guess?'];
+  '%s is a great guess. It has %s letters, but I\'m thinking of a higher number. What\'s your next guess?'];
 const DEEPLINK_PROMPT_2 = ['%s has %s letters. The number I\'m thinking of is lower. Have another guess?',
-    '%s is a great first guess. It has %s letters, but the number I\'m thinking of is lower. Guess again!'];
+  '%s is a great first guess. It has %s letters, but the number I\'m thinking of is lower. Guess again!'];
 const DEEPLINK_PROMPT_3 = ['Wow! You\'re a true Number Genie! %s has %s letters and the number I was thinking of was %s! Well done!',
-    'Amazing! You\'re a real Number Genie! %s has %s letters and the number I was thinking of was %s. Great job!'];
+  'Amazing! You\'re a real Number Genie! %s has %s letters and the number I was thinking of was %s. Great job!'];
 
 const NO_INPUT_PROMPTS = ['I didn\'t hear a number', 'If you\'re still there, what\'s your guess?',
-    'We can stop here. Let\'s play again soon.'];
+  'We can stop here. Let\'s play again soon.'];
 
 const REPEAT_PROMPTS = ['Sure. %s.', 'OK. %s.'];
 
-const IMAGE_BASE_URL = './images/';
+const IMAGE_BASE_URL = HOSTING_URL + '/images';
 
 const IMAGE = {
-  COLD: { url: IMAGE_BASE_URL + 'COLD.gif', altText: 'cold genie', description: 'You\'re really far off!'},
-  COOL: { url: IMAGE_BASE_URL + 'COOL.gif', altText: 'cool genie', description: 'Try again!'},
-  HOT: { url: IMAGE_BASE_URL + 'HOT.gif', altText: 'hot genie', description: 'You\'re so close!'},
-  INTRO: { url: IMAGE_BASE_URL + 'INTRO.gif', altText: 'Mystical crystal ball', description: 'Welcome to Number Genie!'},
-  WARM: { url: IMAGE_BASE_URL + 'WARM.gif', altText: 'warm genie', description: 'You\'re getting closer!'},
-  WIN: { url: IMAGE_BASE_URL + 'WIN.gif', altText: 'celebrating genie', description: '🎉 Congratulations! 🎉'}
+  COLD: {url: IMAGE_BASE_URL + '/COLD.gif', altText: 'cold genie', description: 'You\'re really far off!'},
+  COOL: {url: IMAGE_BASE_URL + '/COOL.gif', altText: 'cool genie', description: 'Try again!'},
+  HOT: {url: IMAGE_BASE_URL + '/HOT.gif', altText: 'hot genie', description: 'You\'re so close!'},
+  INTRO: {url: IMAGE_BASE_URL + '/INTRO.gif', altText: 'Mystical crystal ball', description: 'Welcome to Number Genie!'},
+  WARM: {url: IMAGE_BASE_URL + '/WARM.gif', altText: 'warm genie', description: 'You\'re getting closer!'},
+  WIN: {url: IMAGE_BASE_URL + '/WIN.gif', altText: 'celebrating genie', description: '🎉 Congratulations! 🎉'}
 };
 
 // Utility function to pick prompts
@@ -141,7 +146,7 @@ function getRandomPrompt (app, array) {
   if (lastPrompt) {
     for (let index in array) {
       prompt = array[index];
-      if (prompt != lastPrompt) {
+      if (prompt !== lastPrompt) {
         break;
       }
     }
@@ -151,12 +156,12 @@ function getRandomPrompt (app, array) {
   return prompt;
 }
 
-// HTTP Cloud Function handler
-exports.number_genie = function (request, response) {
+// HTTP Cloud Function for Firebase handler
+exports.number_genie = functions.https.onRequest((request, response) => {
   console.log('headers: ' + JSON.stringify(request.headers));
   console.log('body: ' + JSON.stringify(request.body));
 
-  const app = new ApiAiApp({request, response});
+  const app = new App({request, response});
 
   function generateAnswer (app) {
     console.log('generateAnswer');
@@ -440,7 +445,6 @@ exports.number_genie = function (request, response) {
           } else {
             ask(app, prompt);
           }
-
         } else {
           if (diff <= 1) {
             let prompt = getRandomPrompt(app, REALLY_HOT_HIGH_PROMPTS_1);
@@ -468,11 +472,9 @@ exports.number_genie = function (request, response) {
             }
           }
         }
-        return;
       } else {
         ask(app, printf(getRandomPrompt(app, HIGH_PROMPTS) + ' ' +
           getRandomPrompt(app, ANOTHER_GUESS_PROMPTS), guess));
-        return;
       }
     } else if (answer < guess) {
       let previousHint = app.data.hint;
@@ -482,7 +484,7 @@ exports.number_genie = function (request, response) {
         // Very close to number
         if (app.data.steamSoundCount-- <= 0) {
           app.data.steamSoundCount = STEAM_SOUND_GAP;
-          let prompt = SML_SPEAK_START + STEAM_AUDIO +
+          let prompt = SSML_SPEAK_START + STEAM_AUDIO +
             printf(getRandomPrompt(app, REALLY_HOT_LOW_PROMPTS_2)) + SSML_SPEAK_END;
           if (app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)) {
             let basicCard = app.buildBasicCard(IMAGE.HOT.description)
@@ -521,11 +523,9 @@ exports.number_genie = function (request, response) {
             }
           }
         }
-        return;
       } else {
         ask(app, printf(getRandomPrompt(app, LOW_PROMPTS) + ' ' +
           getRandomPrompt(app, ANOTHER_GUESS_PROMPTS), guess));
-        return;
       }
     } else {
       // Guess is same as number
@@ -548,9 +548,8 @@ exports.number_genie = function (request, response) {
         } else {
           ask(app, prompt);
         }
-        return;
       } else {
-        let prompt = SSML_SPEAK_START + YOU_WIN_AUDIO + 
+        let prompt = SSML_SPEAK_START + YOU_WIN_AUDIO +
           printf(getRandomPrompt(app, CORRECT_GUESS_PROMPTS) + ' ' +
           getRandomPrompt(app, PLAY_AGAIN_QUESTION_PROMPTS), answer) +
           SSML_SPEAK_END;
@@ -564,7 +563,6 @@ exports.number_genie = function (request, response) {
         } else {
           ask(app, prompt);
         }
-        return;
       }
     }
   }
@@ -572,8 +570,8 @@ exports.number_genie = function (request, response) {
   function quit (app) {
     console.log('quit');
     let answer = app.data.answer;
-    app.tell(printf(getRandomPrompt(app, QUIT_REVEAL_PROMPTS) + ' '
-      + getRandomPrompt(app, QUIT_REVEAL_BYE), answer));
+    app.tell(printf(getRandomPrompt(app, QUIT_REVEAL_PROMPTS) + ' ' +
+      getRandomPrompt(app, QUIT_REVEAL_BYE), answer));
   }
 
   function playAgainYes (app) {
@@ -616,7 +614,7 @@ exports.number_genie = function (request, response) {
     app.data.fallbackCount = 0;
     app.data.steamSoundCount = 0;
     app.setContext(GAME_CONTEXT, 1);
-    let text = app.getArgument(RAW_TEXT_ARGUMENT);
+    let text = app.getRawInput();
 
     if (text) {
       if (isNaN(text)) {
@@ -698,7 +696,7 @@ exports.number_genie = function (request, response) {
     app.ask(prompt, NO_INPUT_PROMPTS);
   }
 
-  function printf(prompt) {
+  function printf (prompt) {
     console.log('printf: ' + prompt);
     app.data.printed = prompt;
     return sprintf.apply(this, arguments);
@@ -718,4 +716,4 @@ exports.number_genie = function (request, response) {
   actionMap.set(REPEAT_ACTION, repeat);
 
   app.handleRequest(actionMap);
-};
+});
