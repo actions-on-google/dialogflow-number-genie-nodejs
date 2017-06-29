@@ -1,0 +1,29 @@
+{
+  "name": "guess-a-number",
+  "description": "Google Actions Guess a number sample for Cloud Functions for Firebase",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": "Google Inc.",
+  "scripts": {
+    "lint": "eslint --fix \"**/*.js\"",
+    "start": "firebase serve",
+    "deploy": "firebase deploy",
+    "test": "npm run lint"
+  },
+  "dependencies": {
+    "sprintf-js": "^1.0.3",
+    "actions-on-google": "^1.1.0",
+    "firebase-admin": "^4.2.1",
+    "firebase-functions": "^0.5.7"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
