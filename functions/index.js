@@ -157,7 +157,7 @@ function getRandomPrompt (app, array) {
 }
 
 // HTTP Cloud Function for Firebase handler
-exports.number_genie = functions.https.onRequest((request, response) => {
+exports.numberGenie = functions.https.onRequest((request, response) => {
   console.log('headers: ' + JSON.stringify(request.headers));
   console.log('body: ' + JSON.stringify(request.body));
 
