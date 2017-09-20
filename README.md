@@ -24,10 +24,10 @@ See the developer guide and release notes at [https://developers.google.com/acti
 1. Click *View* to open the Actions on Google simulator.
 1. Type "Talk to my test app" in the simulator, or say "OK Google, talk to my test app" to any Actions on Google enabled device signed into your developer account.
 
-For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/samples/).
+For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/apiai/deploy-fulfillment).
 
 ## References and How to report bugs
-* Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/).
+* Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/apiai/deploy-fulfillment).
 * If you find any issues, please open a bug here on GitHub.
 * Questions are answered on [StackOverflow](https://stackoverflow.com/questions/tagged/actions-on-google).
 
