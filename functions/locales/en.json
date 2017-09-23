@@ -1,0 +1,252 @@
+{
+    "images": {
+        "cold": {
+            "url": "COLD.gif",
+            "altText": "cold genie",
+            "cardText": [
+                "Freezing like an ice cave in Antarctica?",
+                "I can't feel my face anymore",
+                "Hurry, before I turn into an icicle"
+            ]
+        },
+        "cool": {
+            "url": "COOL.gif",
+            "altText": "cool genie",
+            "cardText": [
+                "Colder than a water droplet at 0°C",
+                "Did you feel that cold gust of wind?",
+                "Let me grab a coat. This may take awhile."
+            ]
+        },
+        "hot": {
+            "url": "HOT.gif",
+            "altText": "hot genie",
+            "cardText": [
+                "Hotter than the sun's corona",
+                "It's getting hot. Buy me a slushie?",
+                "I may melt before you solve this one"
+            ]
+        },
+        "intro": {
+            "url": "INTRO.gif",
+            "altText": "mystical crystal ball",
+            "cardText": [
+                "Are you a mind reader?",
+                "Can you read my mind?",
+                "Few have cracked this one on the first try"
+            ]
+        },
+        "warm": {
+            "url": "WARM.gif",
+            "altText": "warm genie",
+            "cardText": [
+                "Warmer than a California summer",
+                "It's getting warm. Hand me my shades.",
+                "You're hot on the trail, but not quite there"
+            ]
+        },
+        "win": {
+            "url": "WIN.gif",
+            "altText": "celebrating genie",
+            "cardText": [
+                "Like an eagle soaring to new heights!",
+                "Balloons are for winners!",
+                "Ready for another go?"
+            ]
+        }
+    },
+    "general": {
+        "noInput": [
+            "I didn't hear a number",
+            "If you're still there, what's your guess?",
+            "We can stop here. Let's play again soon."
+        ]
+    },
+    "suggestions": {
+        "confirm": [
+            "Yeah",
+            "No"
+        ],
+        "done": [
+            "I'm done"
+        ]
+    },
+    "variants": {
+        "reveal": [
+          "Ok, I was thinking of %s.",
+          "Sure, I'll tell you the number anyway. It was %s."
+        ],
+        "revealBye": [
+          "See you later.",
+          "Talk to you later."
+        ],
+        "quit": [
+          "Alright, talk to you later then.",
+          "OK, till next time.",
+          "See you later.",
+          "OK, I'm already thinking of a number for next time."
+        ],
+        "another": [
+          "What's your next guess?",
+          "Have another guess?",
+          "Try another."
+        ],
+        "low": [
+          "It's lower than %s."
+        ],
+        "high": [
+          "It's higher than %s."
+        ],
+        "lowClose": [
+          "It's so close, but not quite!"
+        ],
+        "highClose": [
+          "It's so close, but not quite!"
+        ],
+        "lower": [
+          "You're getting warm. It's lower than %s.",
+          "Take another guess that's lower than %s.",
+          "It's so close, but it's lower than %s."
+        ],
+        "higher": [
+          "You're getting warm. It's higher than %s.",
+          "Warmer. It's also higher than %s.",
+          "It's so close, but it's higher than %s."
+        ],
+        "lowest": [
+          "You're piping hot! But it's still lower.",
+          "You're hot as lava! Go lower.",
+          "Almost there! A bit lower."
+        ],
+        "highest": [
+          "You're piping hot! But it's still higher.",
+          "You're hot as lava! Go higher.",
+          "Almost there! A bit higher."
+        ],
+        "correct": [
+          "Well done! It is indeed %s.",
+          "Congratulations, that's it! I was thinking of %s.",
+          "Well done! It is indeed %s.",
+          "You got it! It's %s."
+        ],
+        "again": [
+          "Wanna play again?",
+          "Want to try again?",
+          "Hey, should we do that again?"
+        ],
+        "greeting": [
+          "Let's play!",
+          "Welcome!",
+          "Hi!"
+        ],
+        "invocation": [
+          "I'm thinking of a number from %s to %s."
+        ],
+        "invocationGuess": [
+          "What's your first guess?"
+        ],
+        "re": [
+          "Great!",
+          "Awesome!",
+          "Cool!",
+          "Okay, let's play again.",
+          "Okay, here we go again.",
+          "Alright, one more time with feeling."
+        ],
+        "reinvocation": [
+          "I'm thinking of a new number from %s to %s."
+        ],
+        "reinvocationAnother": [
+          "What's your guess?"
+        ],
+        "wrongLower": [
+          "Clever, but no. It's still lower than %s.",
+          "Nice try, but it's still lower than %s."
+        ],
+        "wrongHigher": [
+          "Clever, but no. It's still higher than %s.",
+          "Nice try, but it's still higher than %s."
+        ],
+        "reallyColdLow": [
+          "You're ice cold. It's way lower than %s.",
+          "You're freezing cold. It's a lot lower than %s."
+        ],
+        "reallyColdHigh": [
+          "You're ice cold. It’s way higher than %s.",
+          "You're freezing cold. It's a lot higher than %s."
+        ],
+        "reallyHotLow": [
+          "Almost there.",
+          "Very close."
+        ],
+        "reallyHotLow2": [
+          "Keep going.",
+          "It's so close, you're almost there."
+        ],
+        "reallyHotHigh": [
+          "Almost there.",
+          "It's so close."
+        ],
+        "reallyHotHigh2": [
+          "Keep going.",
+          {
+            "speech": "Very close, you're almost there.",
+            "displayText": "Very close.",
+            "cardText": "You're almost there."
+          }
+        ],
+        "sameGuess": [
+          "It's still not %s. Guess %s."
+        ],
+        "sameGuess2": [
+          "Maybe it'll be %s the next time. Let’s play again soon."
+        ],
+        "sameGuess3": [
+          "It's still not %s. Guess again."
+        ],
+        "min": [
+          "I see what you did there."
+        ],
+        "max": [
+          "Oh, good strategy. Start at the top."
+        ],
+        "minFollow": [
+          "But no, it's higher than %s."
+        ],
+        "maxFollow": [
+          "But no, it’s lower than %s."
+        ],
+        "manyTries": [
+          {
+            "speech": "Yes! It's %s. Nice job!",
+            "displayText": "Yes! It's %s.",
+            "cardText": "Nice job!"
+          }
+        ],
+        "manyTriesAgain": [
+          "How about one more round?"
+        ],
+        "fallback": [
+          "Are you done playing Number Genie?"
+        ],
+        "fallback2": [
+          "Since I'm still having trouble, I'll stop here. Let’s play again soon."
+        ],
+        "deeplink": [
+          "%s has %s letters. The number I'm thinking of is higher. Have another guess?",
+          "%s is a great guess. It has %s letters, but I'm thinking of a higher number. What's your next guess?"
+        ],
+        "deeplink2": [
+          "%s has %s letters. The number I'm thinking of is lower. Have another guess?",
+          "%s is a great first guess. It has %s letters, but the number I'm thinking of is lower. Guess again!"
+        ],
+        "deeplink3": [
+          "Wow! You're a true Number Genie! %s has %s letters and the number I was thinking of was %s! Well done!",
+          "Amazing! You're a real Number Genie! %s has %s letters and the number I was thinking of was %s. Great job!"
+        ],
+        "repeat": [
+          "Sure. %s.",
+          "OK. %s."
+        ]
+    }
+}

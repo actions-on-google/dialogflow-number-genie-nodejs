@@ -84,6 +84,7 @@ class NumberGenie {
    * Get the API.AI intent and handle it using the appropriate method
    */
   run () {
+    strings.setLocale(this.app.getUserLocale());
     /** @type {*} */
     const map = this;
     const action = this.app.getIntent();

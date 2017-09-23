@@ -1,0 +1,248 @@
+{
+    "images": {
+        "cold": {
+            "url": "COLD.gif",
+            "altText": "Génie froid",
+            "cardText": [
+                "Je me gèle comme un glaçon en Antartique",
+                "Je ne sens plus mon visage",
+                "Dépêchez-vous avant que je ne me transforme en glaçon"
+            ]
+        },
+        "cool": {
+            "url": "COOL.gif",
+            "altText": "Génie froid",
+            "cardText": [
+                "Plus froid qu’une goûte d’eau à 0°C",
+                "Vous avez senti cette rafale de vent froid ?",
+                "Je vais aller me chercher un manteau. Ca va prendre un moment."
+            ]
+        },
+        "hot": {
+            "url": "HOT.gif",
+            "altText": "Génie chaud",
+            "cardText": [
+                "Plus chaud que la couronne solaire",
+                "Ca se réchauffe. Achetez moi un granité ?",
+                "J’ai le temps de fondre avant que vous ne le trouviez"
+            ]
+        },
+        "intro": {
+            "url": "INTRO.gif",
+            "altText": "Boule de crystal mystique",
+            "cardText": [
+                "Êtes-vous télépathe ?",
+                "Vous lisez dans mon esprit ?",
+                "Rares sont ceux qui l’ont trouvé du premier coup !"
+            ]
+        },
+        "warm": {
+            "url": "WARM.gif",
+            "altText": "Génie chaud",
+            "cardText": [
+                "Plus chaud qu’un été californien",
+                "Ca se réchauffe. Passez moi mes lunettes de soleil",
+                "Vous vous réchauffez, mais vous n’y êtes pas encore"
+            ]
+        },
+        "win": {
+            "url": "WIN.gif",
+            "altText": "Génie content",
+            "cardText": [
+                "Comme un aigle s’envolant vers de nouvelles hauteurs !",
+                "Des ballons pour le vainqueur !",
+                "On remet ça ?"
+            ]
+        }
+    },
+    "general": {
+        "noInput": [
+            "Je n'ai pas entendu le nombre.",
+            "Vous êtes toujours là, vous pensez à quel nombre ?",
+            "Nous pouvons nous arrêter ici. Rejouons bientôt ensemble."
+        ]
+    },
+    "suggestions": {
+        "confirm": [
+            "Oui",
+            "Non"
+        ],
+        "done": [
+            "J’arrête"
+        ]
+    },
+    "variants": {
+        "reveal": [
+            "D'accord. Je pensais au nombre %s.",
+            "Pas de problème. Je vais tout de même vous dire le nombre. C'était %s."
+        ],
+        "revealBye": [
+            "A bientôt.",
+            "Revenez vite !"
+        ],
+        "quit": [
+            "D'accord, on se revoit bientôt.",
+            "Ca marche, à la prochaine fois.",
+            "A bientôt.",
+            "OK, je pense déjà à un autre nombre pour la prochaine fois."
+        ],
+        "another": [
+            "Essayez encore.",
+            "Essayez un autre numéro.",
+            "Quel est votre prochain nombre ?"
+        ],
+        "low": [
+            "C'est plus petit que %s.",
+            "C’est moins élevé que %s."
+        ],
+        "high": [
+            "C'est plus grand que %s."
+        ],
+        "lowClose": [
+            "On se rapproche, mais c’est pas encore tout à fait ça !"
+        ],
+        "highClose": [
+            "On se rapproche, mais c’est pas encore tout à fait ça !"
+        ],
+        "lower": [
+            "On se rapproche. C'est plus petit que %s.",
+            "On se rapproche. Essayer avec un nombre plus petit que %s.",
+            "Vous êtes si près, mais c'est plus petit que %s."
+        ],
+        "higher": [
+            "Vous vous rapprochez. C'est plus grand que %s. Essayez encore.",
+            "Vous chauffez. C'est plus élevé que %s. Un autre nombre ?",
+            "Vous êtes si proche, mais c'est plus grand que %s."
+        ],
+        "lowest": [
+            "Vous brûlez ! Mais c'est toujours plus petit.",
+            "Vous êtes brûlant. Allez encore plus petit.",
+            "Vous y êtes presque. Encore un peu plus petit."
+        ],
+        "highest": [
+            "Vous brûlez. Mais c'est plus grand.",
+            "Vous êtes brûlant. Essayez plus grand.",
+            "Vous y êtes presque. Encore un peu plus grand."
+        ],
+        "correct": [
+            "Bravo! C'est bien %s.",
+            "Félicitations, c'est ça. Je pensais au nombre %s.",
+            "Bingo! Vous avez trouvé ! C'est %s."
+        ],
+        "again": [
+            "Vous voulez jouer encore ?",
+            "Vous voulez retenter votre chance ?",
+            "On recommence une autre partie ?"
+        ],
+        "greeting": [
+            "Jouons !",
+            "Bienvenue !",
+            "Bonjour !"
+        ],
+        "invocation": [
+            "Je pense à un nombre entre %s et %s."
+        ],
+        "invocationGuess": [
+            "Quel est votre premier essai ?"
+        ],
+        "re": [
+            "Génial!",
+            "Super!!",
+            "Cool!",
+            "D'accord, jouons à nouveau.",
+            "OK, c'est reparti.",
+            "D'accord, on remet ça."
+        ],
+        "reinvocation": [
+            "Je pense à un nouveau nombre entre %s et %s."
+        ],
+        "reinvocationAnother": [
+            "A quel nombre je pense ?"
+        ],
+        "wrongLower": [
+            "Malin, mais non. C'est toujours plus petit que %s.",
+            "Bien joué, mais c'est toujours plus petit que %s."
+        ],
+        "wrongHigher": [
+            "Malin, mais non. C'est toujours plus grand que %s.",
+            "Bien joué, mais c'est toujours plus grand que %s."
+        ],
+        "reallyColdLow": [
+            "Froid comme la glace. C'est bien plus petit que %s.",
+            "Vous gelez là. C'est bien beaucoup plus petit que %s."
+        ],
+        "reallyColdHigh": [
+            "Froid comme la glace. C'est bien plus grand que %s.",
+            "Vous gelez là. C'est beaucoup plus grand que %s."
+        ],
+        "reallyHotLow": [
+            "Vous y êtes presque.",
+            "Si proche."
+        ],
+        "reallyHotLow2": [
+            "Continuez.",
+            "Si proche, vous y êtes presque."
+        ],
+        "reallyHotHigh": [
+            "Presque.",
+            "Si proche."
+        ],
+        "reallyHotHigh2": [
+            "Continuez.",
+            "Si proche, vous y êtes presque."
+        ],
+        "sameGuess": [
+            "C'est toujours pas %s. Essayez %s."
+        ],
+        "sameGuess2": [
+            "Peut-être que ce sera le nombre %s la prochaine fois. Rejouons bientôt ensemb"
+        ],
+        "sameGuess3": [
+            "C'est toujours pas %s. Essayez encore."
+        ],
+        "min": [
+            "Je vois ce que vous essayez de faire."
+        ],
+        "max": [
+            "Oh, bonne stratégie. Essayez par le plus élevé."
+        ],
+        "minFollow": [
+            "Mais non. C'est toujours plus grand que %s."
+        ],
+        "maxFollow": [
+            "Mais non, c'est plus petit que %s."
+        ],
+        "manyTries": [
+            {
+              "speech": "Oui, c'est %s. Bien vu !",
+              "displayText": "Oui, c'est %s.",
+              "cardText": "Bien vu !"
+            }
+        ],
+        "manyTriesAgain": [
+            "Et si on recommençait ?"
+        ],
+        "fallback": [
+            "Vous avez assez joué à Nombre Mystère ?"
+        ],
+        "fallback2": [
+            "Désolée je rencontre quelques soucis, arrêtons nous là. Rejouons plus tard ensemble."
+        ],
+        "deeplink": [
+            "%s a %s lettres. Le nombre auquel je pense est plus grand. Un nouvel essai ?",
+            "%s est un bon essai. Il a %s lettres, mais je pense à un nombre plus grand. Quelle est votre prochain essai ?"
+        ],
+        "deeplink2": [
+            "%s a %s lettres. Le nombre auquel je pense est plus petit. Un nouvel essai ?",
+            "%s est un bon essai. Il a %s lettres, mais je pense à un nombre plus petit. Quelle est votre prochain essai ?"
+        ],
+        "deeplink3": [
+            "Waouh ! Vous êtes un vrai génie des nombres ! %s a %s lettres et le nombre auquel je pensais était %s. Bravo !",
+            "Génial ! Vous êtes un vrai génie des nombre ! %s a %s lettres et le nombre auquel je pensais au nombre %s. Bon travail !"
+        ],
+        "repeat": [
+            "Bien sûr. %s.",
+            "D'accord, %s."
+        ]
+    }
+}

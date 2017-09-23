@@ -18,6 +18,22 @@
 // eslint-disable-next-line quotes
 const functions = require('firebase-functions');
 
+const i18n = require("i18n");
+
+i18n.configure({
+  "directory": __dirname + "/locales",
+  "objectNotation": true,
+  "fallbacks": {
+    "fr-FR": "fr",
+    "fr-CA": "fr"
+  }
+});
+
+/** @param {string} locale */
+const setLocale = locale => {
+  i18n.setLocale(locale);
+};
+
 /**
  * (Optional) Change this to the url of your custom hosting site
  * By default, it uses the Firebase hosting authDomain as the root url
@@ -44,63 +60,6 @@ const numbers = {
  */
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const images = {
-  "cold": {
-    "url": "COLD.gif",
-    "altText": "cold genie",
-    "cardText": [
-      "Freezing like an ice cave in Antarctica?",
-      "I can't feel my face anymore",
-      "Hurry, before I turn into an icicle"
-    ]
-  },
-  "cool": {
-    "url": "COOL.gif",
-    "altText": "cool genie",
-    "cardText": [
-      "Colder than a water droplet at 0°C",
-      "Did you feel that cold gust of wind?",
-      "Let me grab a coat. This may take awhile."
-    ]
-  },
-  "hot": {
-    "url": "HOT.gif",
-    "altText": "hot genie",
-    "cardText": [
-      "Hotter than the sun's corona",
-      "It's getting hot. Buy me a slushie?",
-      "I may melt before you solve this one"
-    ]
-  },
-  "intro": {
-    "url": "INTRO.gif",
-    "altText": "mystical crystal ball",
-    "cardText": [
-      "Are you a mind reader?",
-      "Can you read my mind?",
-      "Few have cracked this one on the first try"
-    ]
-  },
-  "warm": {
-    "url": "WARM.gif",
-    "altText": "warm genie",
-    "cardText": [
-      "Warmer than a California summer",
-      "It's getting warm. Hand me my shades.",
-      "You're hot on the trail, but not quite there"
-    ]
-  },
-  "win": {
-    "url": "WIN.gif",
-    "altText": "celebrating genie",
-    "cardText": [
-      "Like an eagle soaring to new heights!",
-      "Balloons are for winners!",
-      "Ready for another go?"
-    ]
-  }
-};
-
 const sound = {
   "cold": ["NumberGenieEarcon_ColdWind.wav"],
   "steam": ["NumberGenieEarcons_Steam.wav"],
@@ -113,208 +72,14 @@ for (const i in soundDict) {
   soundDict[i] = soundDict[i].map(a => getSound(a));
 }
 
-const general = {
-  "noInput": [
-    "I didn't hear a number",
-    "If you're still there, what's your guess?",
-    "We can stop here. Let's play again soon."
-  ]
-};
-
-const suggestions = {
-  "confirm": [
-    "Yeah",
-    "No"
-  ],
-  "done": [
-    "I'm done"
-  ]
-};
-
-const variants = {
-  "reveal": [
-    "Ok, I was thinking of %s.",
-    "Sure, I'll tell you the number anyway. It was %s."
-  ],
-  "revealBye": [
-    "See you later.",
-    "Talk to you later."
-  ],
-  "quit": [
-    "Alright, talk to you later then.",
-    "OK, till next time.",
-    "See you later.",
-    "OK, I'm already thinking of a number for next time."
-  ],
-  "another": [
-    "What's your next guess?",
-    "Have another guess?",
-    "Try another."
-  ],
-  "low": [
-    "It's lower than %s."
-  ],
-  "high": [
-    "It's higher than %s."
-  ],
-  "lowClose": [
-    "It's so close, but not quite!"
-  ],
-  "highClose": [
-    "It's so close, but not quite!"
-  ],
-  "lower": [
-    "You're getting warm. It's lower than %s.",
-    "Take another guess that's lower than %s.",
-    "It's so close, but it's lower than %s."
-  ],
-  "higher": [
-    "You're getting warm. It's higher than %s.",
-    "Warmer. It's also higher than %s.",
-    "It's so close, but it's higher than %s."
-  ],
-  "lowest": [
-    "You're piping hot! But it's still lower.",
-    "You're hot as lava! Go lower.",
-    "Almost there! A bit lower."
-  ],
-  "highest": [
-    "You're piping hot! But it's still higher.",
-    "You're hot as lava! Go higher.",
-    "Almost there! A bit higher."
-  ],
-  "correct": [
-    "Well done! It is indeed %s.",
-    "Congratulations, that's it! I was thinking of %s.",
-    "Well done! It is indeed %s.",
-    "You got it! It's %s."
-  ],
-  "again": [
-    "Wanna play again?",
-    "Want to try again?",
-    "Hey, should we do that again?"
-  ],
-  "greeting": [
-    "Let's play!",
-    "Welcome!",
-    "Hi!"
-  ],
-  "invocation": [
-    "I'm thinking of a number from %s to %s."
-  ],
-  "invocationGuess": [
-    "What's your first guess?"
-  ],
-  "re": [
-    "Great!",
-    "Awesome!",
-    "Cool!",
-    "Okay, let's play again.",
-    "Okay, here we go again.",
-    "Alright, one more time with feeling."
-  ],
-  "reinvocation": [
-    "I'm thinking of a new number from %s to %s."
-  ],
-  "reinvocationAnother": [
-    "What's your guess?"
-  ],
-  "wrongLower": [
-    "Clever, but no. It's still lower than %s.",
-    "Nice try, but it's still lower than %s."
-  ],
-  "wrongHigher": [
-    "Clever, but no. It's still higher than %s.",
-    "Nice try, but it's still higher than %s."
-  ],
-  "reallyColdLow": [
-    "You're ice cold. It's way lower than %s.",
-    "You're freezing cold. It's a lot lower than %s."
-  ],
-  "reallyColdHigh": [
-    "You're ice cold. It’s way higher than %s.",
-    "You're freezing cold. It's a lot higher than %s."
-  ],
-  "reallyHotLow": [
-    "Almost there.",
-    "Very close."
-  ],
-  "reallyHotLow2": [
-    "Keep going.",
-    "It's so close, you're almost there."
-  ],
-  "reallyHotHigh": [
-    "Almost there.",
-    "It's so close."
-  ],
-  "reallyHotHigh2": [
-    "Keep going.",
-    {
-      "speech": "Very close, you're almost there.",
-      "displayText": "Very close.",
-      "cardText": "You're almost there."
-    }
-  ],
-  "sameGuess": [
-    "It's still not %s. Guess %s."
-  ],
-  "sameGuess2": [
-    "Maybe it'll be %s the next time. Let’s play again soon."
-  ],
-  "sameGuess3": [
-    "It's still not %s. Guess again."
-  ],
-  "min": [
-    "I see what you did there."
-  ],
-  "max": [
-    "Oh, good strategy. Start at the top."
-  ],
-  "minFollow": [
-    "But no, it's higher than %s."
-  ],
-  "maxFollow": [
-    "But no, it’s lower than %s."
-  ],
-  "manyTries": [
-    {
-      "speech": "Yes! It's %s. Nice job!",
-      "displayText": "Yes! It's %s.",
-      "cardText": "Nice job!"
-    }
-  ],
-  "manyTriesAgain": [
-    "How about one more round?"
-  ],
-  "fallback": [
-    "Are you done playing Number Genie?"
-  ],
-  "fallback2": [
-    "Since I'm still having trouble, I'll stop here. Let’s play again soon."
-  ],
-  "deeplink": [
-    "%s has %s letters. The number I'm thinking of is higher. Have another guess?",
-    "%s is a great guess. It has %s letters, but I'm thinking of a higher number. What's your next guess?"
-  ],
-  "deeplink2": [
-    "%s has %s letters. The number I'm thinking of is lower. Have another guess?",
-    "%s is a great first guess. It has %s letters, but the number I'm thinking of is lower. Guess again!"
-  ],
-  "deeplink3": [
-    "Wow! You're a true Number Genie! %s has %s letters and the number I was thinking of was %s! Well done!",
-    "Amazing! You're a real Number Genie! %s has %s letters and the number I was thinking of was %s. Great job!"
-  ],
-  "repeat": [
-    "Sure. %s.",
-    "OK. %s."
-  ]
-};
-
 /* eslint-disable quotes */
 /** @param {AppData} data */
 const onlyNumberSuggestions = data => {
+  // eslint-disable-next-line quotes
   const none = !data.hint || data.hint === 'none';
+  // eslint-disable-next-line quotes
   const min = none || data.hint === 'lower' ? numbers.min : data.previousGuess + 1;
+  // eslint-disable-next-line quotes
   const max = none || data.hint === 'higher' ? numbers.max : data.previousGuess - 1;
   // Get a list of all possible numbers
   const all = Array.from(Array(max - min + 1).keys()).map(i => i + min);
@@ -331,15 +96,23 @@ const onlyNumberSuggestions = data => {
 /* eslint-enable quotes */
 
 /** @param {AppData} data */
-const numberSuggestions = data => onlyNumberSuggestions(data).concat(suggestions.done);
+const numberSuggestions = data => onlyNumberSuggestions(data).concat(i18n.__("suggestions.done"));
 
-const prompts = {
+/** @typedef {Array<(string | Image | Variation | Array<Variation>)>} PromptType */
+/**
+ * @typedef {Object} Prompt
+ * @prop {PromptType} rich
+ * @prop {PromptType=} basic
+ * @prop {(Array<string> | function(AppData): Array<string>)=} suggestions
+ */
+
+const prompts = () => ({
   "welcome": {
     "visual": {
       "elements": [
-        [variants.greeting, variants.invocation],
-        variants.invocationGuess,
-        images.intro
+        [i18n.__("variants.greeting"), i18n.__("variants.invocation")],
+        i18n.__("variants.invocationGuess"),
+        i18n.__("images.intro")
       ],
       "suggestions": onlyNumberSuggestions
     }
@@ -347,7 +120,7 @@ const prompts = {
   "sameGuess3": {
     "visual": {
       "elements": [
-        variants.sameGuess3
+        i18n.__("variants.sameGuess3")
       ],
       "suggestions": numberSuggestions
     }
@@ -355,7 +128,7 @@ const prompts = {
   "sameGuess": {
     "visual": {
       "elements": [
-        variants.sameGuess
+        i18n.__("variants.sameGuess")
       ],
       "suggestions": numberSuggestions
     }
@@ -363,15 +136,15 @@ const prompts = {
   "sameGuess2": {
     "visual": {
       "elements": [
-        variants.sameGuess2
+        i18n.__("variants.sameGuess2")
       ]
     }
   },
   "wrongHigher": {
     "visual": {
       "elements": [
-        variants.wrongHigher,
-        images.cool
+        i18n.__("variants.wrongHigher"),
+        i18n.__("images.cool")
       ],
       "suggestions": numberSuggestions
     }
@@ -379,8 +152,8 @@ const prompts = {
   "wrongLower": {
     "visual": {
       "elements": [
-        variants.wrongLower,
-        images.cool
+        i18n.__("variants.wrongLower"),
+        i18n.__("images.cool")
       ],
       "suggestions": numberSuggestions
     }
@@ -388,8 +161,8 @@ const prompts = {
   "min": {
     "visual": {
       "elements": [
-        variants.min,
-        variants.minFollow
+        i18n.__("variants.min"),
+        i18n.__("variants.minFollow")
       ],
       "suggestions": numberSuggestions
     }
@@ -397,8 +170,8 @@ const prompts = {
   "max": {
     "visual": {
       "elements": [
-        variants.max,
-        variants.maxFollow
+        i18n.__("variants.max"),
+        i18n.__("variants.maxFollow")
       ],
       "suggestions": numberSuggestions
     }
@@ -406,8 +179,8 @@ const prompts = {
   "reallyColdHigh": {
     "visual": {
       "elements": [
-        variants.reallyColdHigh,
-        images.cold
+        i18n.__("variants.reallyColdHigh"),
+        i18n.__("images.cold")
       ],
       "suggestions": numberSuggestions
     }
@@ -415,8 +188,8 @@ const prompts = {
   "reallyColdLow": {
     "visual": {
       "elements": [
-        variants.reallyColdLow,
-        images.cold
+        i18n.__("variants.reallyColdLow"),
+        i18n.__("images.cold")
       ],
       "suggestions": numberSuggestions
     }
@@ -424,8 +197,8 @@ const prompts = {
   "highClose": {
     "visual": {
       "elements": [
-        variants.highClose,
-        images.hot
+        i18n.__("variants.highClose"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -433,8 +206,8 @@ const prompts = {
   "lowClose": {
     "visual": {
       "elements": [
-        variants.lowClose,
-        images.hot
+        i18n.__("variants.lowClose"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -442,8 +215,8 @@ const prompts = {
   "highestSteam": {
     "visual": {
       "elements": [
-        [sound.steamOnly, variants.highest],
-        images.hot
+        [sound.steamOnly, i18n.__("variants.highest")],
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -451,8 +224,8 @@ const prompts = {
   "highest": {
     "visual": {
       "elements": [
-        variants.highest,
-        images.hot
+        i18n.__("variants.highest"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -460,8 +233,8 @@ const prompts = {
   "lowestSteam": {
     "visual": {
       "elements": [
-        [sound.steamOnly, variants.lowest],
-        images.hot
+        [sound.steamOnly, i18n.__("variants.lowest")],
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -469,8 +242,8 @@ const prompts = {
   "lowest": {
     "visual": {
       "elements": [
-        variants.lowest,
-        images.hot
+        i18n.__("variants.lowest"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -478,9 +251,9 @@ const prompts = {
   "higher": {
     "visual": {
       "elements": [
-        variants.higher,
-        images.warm,
-        variants.another
+        i18n.__("variants.higher"),
+        i18n.__("images.warm"),
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
@@ -488,9 +261,9 @@ const prompts = {
   "lower": {
     "visual": {
       "elements": [
-        variants.lower,
-        images.warm,
-        variants.another
+        i18n.__("variants.lower"),
+        i18n.__("images.warm"),
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
@@ -498,8 +271,8 @@ const prompts = {
   "reallyHotHigh2Steam": {
     "visual": {
       "elements": [
-        [sound.steam, variants.reallyHotHigh2],
-        images.hot
+        [sound.steam, i18n.__("variants.reallyHotHigh2")],
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -507,8 +280,8 @@ const prompts = {
   "reallyHotHigh": {
     "visual": {
       "elements": [
-        variants.reallyHotHigh,
-        images.hot
+        i18n.__("variants.reallyHotHigh"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -516,8 +289,8 @@ const prompts = {
   "reallyHotHigh2": {
     "visual": {
       "elements": [
-        variants.reallyHotHigh2,
-        images.hot
+        i18n.__("variants.reallyHotHigh2"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -525,8 +298,8 @@ const prompts = {
   "high": {
     "visual": {
       "elements": [
-        variants.high,
-        variants.another
+        i18n.__("variants.high"),
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
@@ -534,8 +307,8 @@ const prompts = {
   "reallyHotLow2Steam": {
     "visual": {
       "elements": [
-        [sound.steam, variants.reallyHotLow2],
-        images.hot
+        [sound.steam, i18n.__("variants.reallyHotLow2")],
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -543,8 +316,8 @@ const prompts = {
   "reallyHotLow": {
     "visual": {
       "elements": [
-        variants.reallyHotLow,
-        images.hot
+        i18n.__("variants.reallyHotLow"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -552,8 +325,8 @@ const prompts = {
   "reallyHotLow2": {
     "visual": {
       "elements": [
-        variants.reallyHotLow2,
-        images.hot
+        i18n.__("variants.reallyHotLow2"),
+        i18n.__("images.hot")
       ],
       "suggestions": numberSuggestions
     }
@@ -561,8 +334,8 @@ const prompts = {
   "low": {
     "visual": {
       "elements": [
-        variants.low,
-        variants.another
+        i18n.__("variants.low"),
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
@@ -570,36 +343,36 @@ const prompts = {
   "winManyTries": {
     "visual": {
       "elements": [
-        [sound.win, variants.manyTries],
-        images.win,
-      [variants.manyTriesAgain]
+        [sound.win, i18n.__("variants.manyTries")],
+        i18n.__("images.win"),
+        i18n.__("variants.manyTriesAgain")
       ],
-      "suggestions": suggestions.confirm
+      "suggestions": i18n.__("suggestions.confirm")
     }
   },
   "win": {
     "visual": {
       "elements": [
-        [sound.win, variants.correct],
-        images.win,
-        variants.again
+        [sound.win, i18n.__("variants.correct")],
+        i18n.__("images.win"),
+        i18n.__("variants.again")
       ],
-      "suggestions": suggestions.confirm
+      "suggestions": i18n.__("suggestions.confirm")
     }
   },
   "reveal": {
     "visual": {
       "elements": [
-        variants.reveal,
-        variants.revealBye
+        i18n.__("variants.reveal"),
+        i18n.__("variants.revealBye")
       ]
     }
   },
   "re": {
     "visual": {
       "elements": [
-        [variants.re, variants.reinvocation],
-        variants.reinvocationAnother
+        [i18n.__("variants.re"), i18n.__("variants.reinvocation")],
+        i18n.__("variants.reinvocationAnother")
       ],
       "suggestions": numberSuggestions
     }
@@ -607,30 +380,30 @@ const prompts = {
   "quit": {
     "visual": {
       "elements": [
-        variants.quit
+        i18n.__("variants.quit")
       ]
     }
   },
   "fallback": {
     "visual": {
       "elements": [
-        variants.fallback
+        i18n.__("variants.fallback")
       ],
-      "suggestions": suggestions.confirm
+      "suggestions": i18n.__("suggestions.confirm")
     }
   },
   "fallback2": {
     "visual": {
       "elements": [
-        variants.fallback2
+        i18n.__("variants.fallback2")
       ]
     }
   },
   "deeplink": {
     "visual": {
       "elements": [
-        variants.greeting,
-        variants.deeplink
+        i18n.__("variants.greeting"),
+        i18n.__("variants.deeplink")
       ],
       "suggestions": numberSuggestions
     }
@@ -638,8 +411,8 @@ const prompts = {
   "deeplink2": {
     "visual": {
       "elements": [
-        variants.greeting,
-        variants.deeplink2
+        i18n.__("variants.greeting"),
+        i18n.__("variants.deeplink2")
       ],
       "suggestions": numberSuggestions
     }
@@ -647,17 +420,17 @@ const prompts = {
   "deeplink3": {
     "visual": {
       "elements": [
-        [sound.win, variants.deeplink3],
-        variants.again
+        [sound.win, i18n.__("variants.deeplink3")],
+        i18n.__("variants.again")
       ],
-      "suggestions": suggestions.confirm
+      "suggestions": i18n.__("suggestions.confirm")
     }
   },
   "reAnother": {
     "visual": {
       "elements": [
-        variants.re,
-        variants.another
+        i18n.__("variants.re"),
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
@@ -665,17 +438,18 @@ const prompts = {
   "another": {
     "visual": {
       "elements": [
-        variants.another
+        i18n.__("variants.another")
       ],
       "suggestions": numberSuggestions
     }
   }
-};
+});
 
 module.exports = {
   getRandomNumber,
   getImage,
   numbers,
-  general,
-  prompts
+  get "general" () { return i18n.__("general"); },
+  get "prompts" () { return prompts(); },
+  setLocale
 };

@@ -12,15 +12,18 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "sprintf-js": "^1.0.3",
     "actions-on-google": "^1.2.1",
     "firebase-admin": "^4.2.1",
-    "firebase-functions": "^0.5.7"
+    "firebase-functions": "^0.5.7",
+    "i18n": "^0.8.3",
+    "sprintf-js": "^1.0.3"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-config-semistandard": "^11.0.0",
     "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-chai-expect": "^1.1.1",
+    "eslint-plugin-chai-friendly": "^0.4.0",
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-promise": "^3.5.0",

@@ -2,6 +2,16 @@
 
 This guess a number game, called Number Genie, is an action for the Google Assistant.
 
+## Localization
+
+This app uses the [i18n-node](https://github.com/mashpie/i18n-node) library to provide
+responses in both French and English. The responses are listed in the `locales` directory.
+In each function execution, the `strings.js` `setLocale()` function is called to
+set the i18n-node locale based on the user locale in the incoming request. Prompts are then
+selected by i18n-node from the available languages, defaulting to `en` if the
+user's language is unavailable.
+
+
 ## Setup Instructions
 
 See the developer guide and release notes at [https://developers.google.com/actions/](https://developers.google.com/actions/) for more details.
