@@ -27,7 +27,7 @@ See the developer guide and release notes at [https://developers.google.com/acti
 For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/apiai/deploy-fulfillment).
 
 ## References and How to report bugs
-* Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/apiai/deploy-fulfillment).
+* Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/).
 * If you find any issues, please open a bug here on GitHub.
 * Questions are answered on [StackOverflow](https://stackoverflow.com/questions/tagged/actions-on-google).
 
