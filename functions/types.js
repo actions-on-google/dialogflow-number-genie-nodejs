@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * The Number Genie ApiAiApp.data properties within a conversation context
+ * The Number Genie DialogflowApp.data properties within a conversation context
  * @typedef {Object} AppData
  * @prop {Hint} hint Current Hint direction (higher, lower, none) that would be given to the user
  * @prop {Array<PromptElement>} lastPrompts RichElements and strings sent last time app responded

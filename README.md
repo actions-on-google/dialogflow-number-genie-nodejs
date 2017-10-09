@@ -18,7 +18,7 @@ See the developer guide and release notes at [https://developers.google.com/acti
 
 ### Steps
 1. Use the [Actions on Google Console](https://console.actions.google.com) to add a new project with a name of your choosing.
-1. Click *Use API.AI* and then *Create Actions on API.AI* to open the API.AI console.
+1. Under *Build a custom app*, click *BUILD* in the Dialogflow box and then click *Create Actions on Dialogflow*.
 1. Click *Save* to save the project.
 1. Click on the gear icon to see the project settings.
 1. Select *Export and Import*.
@@ -27,13 +27,13 @@ See the developer guide and release notes at [https://developers.google.com/acti
     1. Follow the instructions to [install the Firebase CLI](https://firebase.google.com/docs/hosting/quickstart#install-the-firebase-cli).
     1. Run `firebase init`, and select to configure `Hosting` and `Functions`. Select the project you've previously created in the Actions on Google Console as default project. In the configuration wizard, accept all the default choices.
     1. Run `firebase deploy` and take note of the endpoint where the fulfillment webhook has been published. It should look like `Function URL (numberGenie): https://${REGION}-${PROJECT}.cloudfunctions.net/numberGenie`. The command will also deploy the static assets at `https://${PROJECT}.firebaseapp.com/`.
-1. Go back to the API.AI console and select *Fulfillment* from the left navigation menu. Enable *Webhook*, set the value of *URL* to the `Function URL` from the previous step, then click *Save*.
+1. Go back to the Dialogflow console and select *Fulfillment* from the left navigation menu. Enable *Webhook*, set the value of *URL* to the `Function URL` from the previous step, then click *Save*.
 1. Select *Integrations* from the left navigation menu and open the *Settings* menu for Actions on Google.
 1. Click *Test*.
 1. Click *View* to open the Actions on Google simulator.
 1. Type "Talk to my test app" in the simulator, or say "OK Google, talk to my test app" to any Actions on Google enabled device signed into your developer account.
 
-For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/apiai/deploy-fulfillment).
+For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/dialogflow/deploy-fulfillment).
 
 ## References and How to report bugs
 * Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/).

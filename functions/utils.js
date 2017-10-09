@@ -23,7 +23,7 @@ const strings = require('./strings');
 class Utils {
   /**
    * Create a new utils instance to help send responses
-   * @param {ApiAiApp} app
+   * @param {DialogflowApp} app
    */
   constructor (app) {
     this.app = app;

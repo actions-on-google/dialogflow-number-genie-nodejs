@@ -15,12 +15,12 @@
 'use strict';
 
 process.env.DEBUG = 'actions-on-google:*';
-const { ApiAiApp } = require('actions-on-google');
+const { DialogflowApp } = require('actions-on-google');
 const functions = require('firebase-functions');
 const strings = require('./strings');
 const { Utils } = require('./utils');
 
-/** API.AI Actions {@link https://api.ai/docs/actions-and-parameters#actions} */
+/** Dialogflow Actions {@link https://dialogflow.com/docs/actions-and-parameters#actions} */
 const Actions = {
   GENERATE_ANSWER: 'generate_answer',
   CHECK_GUESS: 'check_guess',
@@ -34,12 +34,12 @@ const Actions = {
   DONE_NO: 'done_no',
   REPEAT: 'repeat'
 };
-/** API.AI Parameters {@link https://api.ai/docs/actions-and-parameters#parameters} */
+/** Dialogflow Parameters {@link https://dialogflow.com/docs/actions-and-parameters#parameters} */
 const Parameters = {
   NUMBER: 'number',
   GUESS: 'guess'
 };
-/** API.AI Contexts {@link https://api.ai/docs/contexts} */
+/** Dialogflow Contexts {@link https://dialogflow.com/docs/contexts} */
 const Contexts = {
   GAME: 'game',
   YES_NO: 'yes_no',
@@ -73,15 +73,15 @@ class NumberGenie {
   constructor (req, res) {
     console.log(`Headers: ${JSON.stringify(req.headers)}`);
     console.log(`Body: ${JSON.stringify(req.body)}`);
-    /** @type {ApiAiApp} */
-    this.app = new ApiAiApp({ request: req, response: res });
+    /** @type {DialogflowApp} */
+    this.app = new DialogflowApp({ request: req, response: res });
     /** @type {AppData} */
     this.data = this.app.data;
     this.utils = new Utils(this.app);
   }
 
   /**
-   * Get the API.AI intent and handle it using the appropriate method
+   * Get the Dialogflow intent and handle it using the appropriate method
    */
   run () {
     strings.setLocale(this.app.getUserLocale());
@@ -113,7 +113,7 @@ class NumberGenie {
     this.utils.send(prompt, args, true);
   }
 
-  // Below are API.AI intent handlers
+  // Below are Dialogflow intent handlers
 
   [Actions.GENERATE_ANSWER] () {
     this.data.answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
