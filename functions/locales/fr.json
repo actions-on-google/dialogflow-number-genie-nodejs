@@ -243,6 +243,9 @@
         "repeat": [
             "Bien sûr. %s.",
             "D'accord, %s."
+        ],
+        "outOfBoundsDeeplink": [
+          "Ouh là là, je ne peux pas vous faire deviner ce nombre-là. Laissez-moi en choisir un autre."
         ]
     }
 }

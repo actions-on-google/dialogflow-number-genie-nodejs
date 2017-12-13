@@ -247,6 +247,9 @@
         "repeat": [
           "Sure. %s.",
           "OK. %s."
+        ],
+        "outOfBoundsDeeplink": [
+          "Woah there! I can't use that number. I've picked another for you."
         ]
     }
 }

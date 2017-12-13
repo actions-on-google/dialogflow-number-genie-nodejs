@@ -442,6 +442,16 @@ const prompts = () => ({
       ],
       "suggestions": numberSuggestions
     }
+  },
+  "outOfBoundsDeeplink": {
+    "visual": {
+      "elements": [
+        [i18n.__("variants.outOfBoundsDeeplink"), i18n.__("variants.invocation")],
+        i18n.__("variants.invocationGuess"),
+        i18n.__("images.intro")
+      ],
+      "suggestions": numberSuggestions
+    }
   }
 });
 

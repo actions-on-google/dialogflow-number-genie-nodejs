@@ -330,7 +330,13 @@ class NumberGenie {
     // Easter egg to set the answer for demos
     // Handle "talk to number genie about 55"
     this.data.answer = parseInt(this.app.getArgument(Parameters.NUMBER));
-    this.ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
+    // Check if answer is in bounds
+    if (this.data.answer >= strings.numbers.min && this.data.answer <= strings.numbers.max) {
+      return this.ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
+    }
+    // Give a different prompt if answer is out of bounds
+    this.data.answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
+    this.ask(strings.prompts.outOfBoundsDeeplink, strings.numbers.min, strings.numbers.max);
   }
 
   [Actions.DONE_YES] () {
