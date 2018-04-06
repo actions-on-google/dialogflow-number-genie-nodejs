@@ -16,12 +16,11 @@
 /* eslint quotes: ["error", "double"] */
 
 // eslint-disable-next-line quotes
-const functions = require('firebase-functions');
-
 const i18n = require("i18n");
+const path = require("path");
 
 i18n.configure({
-  "directory": __dirname + "/locales",
+  "directory": path.join(__dirname, "/locales"),
   "objectNotation": true,
   "fallbacks": {
     "fr-FR": "fr",
@@ -34,13 +33,15 @@ const setLocale = locale => {
   i18n.setLocale(locale);
 };
 
+const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+
 /**
  * (Optional) Change this to the url of your custom hosting site
  * By default, it uses the Firebase hosting authDomain as the root url
  */
 const hosting = "";
 
-const baseUrl = hosting || `https://${functions.config().firebase.authDomain}`;
+const baseUrl = hosting || `https://${firebaseConfig.projectId}.firebaseapp.com`;
 
 /** @param {string} image */
 const getImage = image => `${baseUrl}/images/${image}`;
