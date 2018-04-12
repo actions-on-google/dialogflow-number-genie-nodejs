@@ -15,6 +15,8 @@
 /* eslint quote-props: ["error", "always"] */
 /* eslint quotes: ["error", "double"] */
 
+"use strict";
+
 // eslint-disable-next-line quotes
 const i18n = require("i18n");
 const path = require("path");
@@ -24,12 +26,12 @@ i18n.configure({
   "objectNotation": true,
   "fallbacks": {
     "fr-FR": "fr",
-    "fr-CA": "fr"
-  }
+    "fr-CA": "fr",
+  },
 });
 
 /** @param {string} locale */
-const setLocale = locale => {
+const setLocale = (locale) => {
   i18n.setLocale(locale);
 };
 
@@ -43,47 +45,60 @@ const hosting = "";
 
 const baseUrl = hosting || `https://${firebaseConfig.projectId}.firebaseapp.com`;
 
-/** @param {string} image */
-const getImage = image => `${baseUrl}/images/${image}`;
+/**
+ * @param {string} image
+ * @return {string}
+ */
+const getImage = (image) => `${baseUrl}/images/${image}`;
 
-/** @param {string} sound */
-const getSound = sound => `<audio src="${baseUrl}/audio/${sound}"/>`;
+/**
+ * @param {string} sound
+ * @return {string}
+ */
+const getSound = (sound) => `<audio src="${baseUrl}/audio/${sound}"/>`;
 
 const numbers = {
   "min": 0,
   "max": 100,
-  "suggestions": 4
+  "suggestions": 4,
 };
 
 /**
  * @param {number} min
  * @param {number} max
+ * @return {number}
  */
-const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getRandomNumber =
+  (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const sound = {
   "cold": ["NumberGenieEarcon_ColdWind.wav"],
   "steam": ["NumberGenieEarcons_Steam.wav"],
   "steamOnly": ["NumberGenieEarcon_SteamOnly.wav"],
-  "win": ["NumberGenieEarcons_YouWin.wav"]
+  "win": ["NumberGenieEarcons_YouWin.wav"],
 };
 /** @type {AoG.Object<string, SimpleVariants>} */
 const soundDict = sound;
-for (const i in soundDict) {
-  soundDict[i] = soundDict[i].map(a => getSound(a));
+for (const i of Object.keys(soundDict)) {
+  soundDict[i] = soundDict[i].map((a) => getSound(a));
 }
 
 /* eslint-disable quotes */
-/** @param {AppData} data */
-const onlyNumberSuggestions = data => {
+/**
+ * @param {ConvData} data
+ * @return {Array<string>}
+ */
+const onlyNumberSuggestions = (data) => {
   // eslint-disable-next-line quotes
   const none = !data.hint || data.hint === 'none';
   // eslint-disable-next-line quotes
-  const min = none || data.hint === 'lower' ? numbers.min : data.previousGuess + 1;
+  const min = none || data.hint === 'lower' ?
+    numbers.min : data.previousGuess + 1;
   // eslint-disable-next-line quotes
-  const max = none || data.hint === 'higher' ? numbers.max : data.previousGuess - 1;
+  const max = none || data.hint === 'higher' ?
+    numbers.max : data.previousGuess - 1;
   // Get a list of all possible numbers
-  const all = Array.from(Array(max - min + 1).keys()).map(i => i + min);
+  const all = Array.from(Array(max - min + 1).keys()).map((i) => i + min);
   // Use the Durstenfeld shuffle to randomly shuffle the list
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -92,19 +107,25 @@ const onlyNumberSuggestions = data => {
     all[j] = temp;
   }
   // Return the first N numbers as strings
-  return all.slice(0, numbers.suggestions).map(i => i.toString());
+  return all.slice(0, numbers.suggestions).map((i) => i.toString());
 };
 /* eslint-enable quotes */
 
-/** @param {AppData} data */
-const numberSuggestions = data => onlyNumberSuggestions(data).concat(i18n.__("suggestions.done"));
+/**
+ * @param {ConvData} data
+ * @return {Array<string>}
+ */
+const numberSuggestions =
+  (data) => onlyNumberSuggestions(data).concat(i18n.__("suggestions.done"));
 
-/** @typedef {Array<(string | Image | Variation | Array<Variation>)>} PromptType */
+/**
+ * @typedef {Array<(string | Image | Variation | Array<Variation>)>} PromptType
+ */
 /**
  * @typedef {Object} Prompt
  * @prop {PromptType} rich
  * @prop {PromptType=} basic
- * @prop {(Array<string> | function(AppData): Array<string>)=} suggestions
+ * @prop {(Array<string> | function(ConvData): Array<string>)=} suggestions
  */
 
 const prompts = () => ({
@@ -113,354 +134,361 @@ const prompts = () => ({
       "elements": [
         [i18n.__("variants.greeting"), i18n.__("variants.invocation")],
         i18n.__("variants.invocationGuess"),
-        i18n.__("images.intro")
+        i18n.__("images.intro"),
       ],
-      "suggestions": onlyNumberSuggestions
-    }
+      "suggestions": onlyNumberSuggestions,
+    },
   },
   "sameGuess3": {
     "visual": {
       "elements": [
-        i18n.__("variants.sameGuess3")
+        i18n.__("variants.sameGuess3"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "sameGuess": {
     "visual": {
       "elements": [
-        i18n.__("variants.sameGuess")
+        i18n.__("variants.sameGuess"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "sameGuess2": {
     "visual": {
       "elements": [
-        i18n.__("variants.sameGuess2")
-      ]
-    }
+        i18n.__("variants.sameGuess2"),
+      ],
+    },
   },
   "wrongHigher": {
     "visual": {
       "elements": [
         i18n.__("variants.wrongHigher"),
-        i18n.__("images.cool")
+        i18n.__("images.cool"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "wrongLower": {
     "visual": {
       "elements": [
         i18n.__("variants.wrongLower"),
-        i18n.__("images.cool")
+        i18n.__("images.cool"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "min": {
     "visual": {
       "elements": [
         i18n.__("variants.min"),
-        i18n.__("variants.minFollow")
+        i18n.__("variants.minFollow"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "max": {
     "visual": {
       "elements": [
         i18n.__("variants.max"),
-        i18n.__("variants.maxFollow")
+        i18n.__("variants.maxFollow"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyColdHigh": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyColdHigh"),
-        i18n.__("images.cold")
+        i18n.__("images.cold"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyColdLow": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyColdLow"),
-        i18n.__("images.cold")
+        i18n.__("images.cold"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "highClose": {
     "visual": {
       "elements": [
         i18n.__("variants.highClose"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "lowClose": {
     "visual": {
       "elements": [
         i18n.__("variants.lowClose"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "highestSteam": {
     "visual": {
       "elements": [
         [sound.steamOnly, i18n.__("variants.highest")],
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "highest": {
     "visual": {
       "elements": [
         i18n.__("variants.highest"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "lowestSteam": {
     "visual": {
       "elements": [
         [sound.steamOnly, i18n.__("variants.lowest")],
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "lowest": {
     "visual": {
       "elements": [
         i18n.__("variants.lowest"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "higher": {
     "visual": {
       "elements": [
         i18n.__("variants.higher"),
         i18n.__("images.warm"),
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "lower": {
     "visual": {
       "elements": [
         i18n.__("variants.lower"),
         i18n.__("images.warm"),
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotHigh2Steam": {
     "visual": {
       "elements": [
         [sound.steam, i18n.__("variants.reallyHotHigh2")],
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotHigh": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyHotHigh"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotHigh2": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyHotHigh2"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "high": {
     "visual": {
       "elements": [
         i18n.__("variants.high"),
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotLow2Steam": {
     "visual": {
       "elements": [
         [sound.steam, i18n.__("variants.reallyHotLow2")],
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotLow": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyHotLow"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "reallyHotLow2": {
     "visual": {
       "elements": [
         i18n.__("variants.reallyHotLow2"),
-        i18n.__("images.hot")
+        i18n.__("images.hot"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "low": {
     "visual": {
       "elements": [
         i18n.__("variants.low"),
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "winManyTries": {
     "visual": {
       "elements": [
         [sound.win, i18n.__("variants.manyTries")],
         i18n.__("images.win"),
-        i18n.__("variants.manyTriesAgain")
+        i18n.__("variants.manyTriesAgain"),
       ],
-      "suggestions": i18n.__("suggestions.confirm")
-    }
+      "suggestions": i18n.__("suggestions.confirm"),
+    },
   },
   "win": {
     "visual": {
       "elements": [
         [sound.win, i18n.__("variants.correct")],
         i18n.__("images.win"),
-        i18n.__("variants.again")
+        i18n.__("variants.again"),
       ],
-      "suggestions": i18n.__("suggestions.confirm")
-    }
+      "suggestions": i18n.__("suggestions.confirm"),
+    },
   },
   "reveal": {
     "visual": {
       "elements": [
         i18n.__("variants.reveal"),
-        i18n.__("variants.revealBye")
-      ]
-    }
+        i18n.__("variants.revealBye"),
+      ],
+    },
   },
   "re": {
     "visual": {
       "elements": [
         [i18n.__("variants.re"), i18n.__("variants.reinvocation")],
-        i18n.__("variants.reinvocationAnother")
+        i18n.__("variants.reinvocationAnother"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "quit": {
     "visual": {
       "elements": [
-        i18n.__("variants.quit")
-      ]
-    }
+        i18n.__("variants.quit"),
+      ],
+    },
   },
   "fallback": {
     "visual": {
       "elements": [
-        i18n.__("variants.fallback")
+        i18n.__("variants.fallback"),
       ],
-      "suggestions": i18n.__("suggestions.confirm")
-    }
+      "suggestions": i18n.__("suggestions.confirm"),
+    },
   },
   "fallback2": {
     "visual": {
       "elements": [
-        i18n.__("variants.fallback2")
-      ]
-    }
+        i18n.__("variants.fallback2"),
+      ],
+    },
   },
   "deeplink": {
     "visual": {
       "elements": [
         i18n.__("variants.greeting"),
-        i18n.__("variants.deeplink")
+        i18n.__("variants.deeplink"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "deeplink2": {
     "visual": {
       "elements": [
         i18n.__("variants.greeting"),
-        i18n.__("variants.deeplink2")
+        i18n.__("variants.deeplink2"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "deeplink3": {
     "visual": {
       "elements": [
         [sound.win, i18n.__("variants.deeplink3")],
-        i18n.__("variants.again")
+        i18n.__("variants.again"),
       ],
-      "suggestions": i18n.__("suggestions.confirm")
-    }
+      "suggestions": i18n.__("suggestions.confirm"),
+    },
   },
   "reAnother": {
     "visual": {
       "elements": [
         i18n.__("variants.re"),
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "another": {
     "visual": {
       "elements": [
-        i18n.__("variants.another")
+        i18n.__("variants.another"),
       ],
-      "suggestions": numberSuggestions
-    }
+      "suggestions": numberSuggestions,
+    },
   },
   "outOfBoundsDeeplink": {
     "visual": {
       "elements": [
-        [i18n.__("variants.outOfBoundsDeeplink"), i18n.__("variants.invocation")],
+        [
+          i18n.__("variants.outOfBoundsDeeplink"),
+          i18n.__("variants.invocation"),
+        ],
         i18n.__("variants.invocationGuess"),
-        i18n.__("images.intro")
+        i18n.__("images.intro"),
       ],
-      "suggestions": numberSuggestions
-    }
-  }
+      "suggestions": numberSuggestions,
+    },
+  },
 });
 
 module.exports = {
   getRandomNumber,
   getImage,
   numbers,
-  get "general" () { return i18n.__("general"); },
-  get "prompts" () { return prompts(); },
-  setLocale
+  get "general"() {
+    return i18n.__("general");
+  },
+  get "prompts"() {
+    return prompts();
+  },
+  setLocale,
 };

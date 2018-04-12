@@ -14,36 +14,27 @@
 
 'use strict';
 
-process.env.DEBUG = 'actions-on-google:*';
-const { DialogflowApp } = require('actions-on-google');
+const {dialogflow} = require('actions-on-google');
 const functions = require('firebase-functions');
 const strings = require('./strings');
-const { Utils } = require('./utils');
+const {Utils} = require('./utils');
 
-/** Dialogflow Actions {@link https://dialogflow.com/docs/actions-and-parameters#actions} */
-const Actions = {
-  GENERATE_ANSWER: 'generate_answer',
-  CHECK_GUESS: 'check_guess',
-  QUIT: 'quit',
-  PLAY_AGAIN_YES: 'play_again_yes',
-  PLAY_AGAIN_NO: 'play_again_no',
-  DEFAULT_FALLBACK: 'input.unknown',
-  UNKNOWN_DEEPLINK: 'deeplink.unknown',
-  NUMBER_DEEPLINK: 'deeplink.number',
-  DONE_YES: 'done_yes',
-  DONE_NO: 'done_no',
-  REPEAT: 'repeat'
-};
-/** Dialogflow Parameters {@link https://dialogflow.com/docs/actions-and-parameters#parameters} */
+/**
+ * Dialogflow Parameters
+ * {@link https://dialogflow.com/docs/actions-and-parameters#parameters}
+ */
 const Parameters = {
   NUMBER: 'number',
-  GUESS: 'guess'
+  GUESS: 'guess',
 };
-/** Dialogflow Contexts {@link https://dialogflow.com/docs/contexts} */
+/**
+ * Dialogflow Contexts
+ * {@link https://dialogflow.com/docs/contexts}
+ */
 const Contexts = {
   GAME: 'game',
   YES_NO: 'yes_no',
-  DONE_YES_NO: 'done_yes_no'
+  DONE_YES_NO: 'done_yes_no',
 };
 
 const STEAM_SOUND_GAP = 5;
@@ -58,307 +49,294 @@ const STEAM_SOUND_GAP = 5;
 const Hints = {
   HIGHER: 'higher',
   LOWER: 'lower',
-  NONE: 'none'
+  NONE: 'none',
 };
 
-/**
- * A class to process a request from the Assistant
- */
-class NumberGenie {
-  /**
-   * Create a new instance of the app handler
-   * @param {AoG.ExpressRequest} req
-   * @param {AoG.ExpressResponse} res
-   */
-  constructor (req, res) {
-    console.log(`Headers: ${JSON.stringify(req.headers)}`);
-    console.log(`Body: ${JSON.stringify(req.body)}`);
-    /** @type {DialogflowApp} */
-    this.app = new DialogflowApp({ request: req, response: res });
-    /** @type {AppData} */
-    this.data = this.app.data;
-    this.utils = new Utils(this.app);
+const app = dialogflow({debug: true});
+
+app.middleware((conv) => {
+  strings.setLocale(conv.user.locale);
+  conv.utils = new Utils(conv);
+});
+
+app.intent('start_game', (conv) => {
+  conv.data.answer =
+    strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
+  conv.data.guessCount = 0;
+  conv.data.fallbackCount = 0;
+  conv.data.steamSoundCount = 0;
+  conv.utils
+    .ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
+});
+
+app.intent('provide_guess', (conv, params) => {
+  const answer = conv.data.answer;
+  const guess = parseInt(conv.parameters[Parameters.GUESS]);
+  const diff = Math.abs(guess - answer);
+  conv.data.guessCount++;
+  conv.data.fallbackCount = 0;
+  // Check for duplicate guesses
+  if (typeof conv.data.previousGuess === 'number' &&
+    guess === conv.data.previousGuess) {
+    conv.data.duplicateCount++;
+    if (conv.data.duplicateCount === 1) {
+      if (!conv.data.hint || conv.data.hint === Hints.NONE) {
+        return conv.utils.ask(strings.prompts.sameGuess3, guess);
+      }
+      return conv.utils.ask(strings.prompts.sameGuess, guess, conv.data.hint);
+    }
+    return conv.utils.close(strings.prompts.sameGuess2, guess);
   }
-
-  /**
-   * Get the Dialogflow intent and handle it using the appropriate method
-   */
-  run () {
-    strings.setLocale(this.app.getUserLocale());
-    /** @type {*} */
-    const map = this;
-    const action = this.app.getIntent();
-    console.log(action);
-    if (!action) {
-      return this.app.ask(`I didn't hear a number. What's your guess?`);
+  conv.data.duplicateCount = 0;
+  // Check if user isn't following hints
+  if (conv.data.hint) {
+    if (conv.data.hint === Hints.HIGHER && guess <= conv.data.previousGuess) {
+      return conv.utils
+        .ask(strings.prompts.wrongHigher, conv.data.previousGuess);
     }
-    map[action]();
+    if (conv.data.hint === Hints.LOWER && guess >= conv.data.previousGuess) {
+      return conv.utils
+        .ask(strings.prompts.wrongLower, conv.data.previousGuess);
+    }
   }
-
-  /**
-   * Send a developer provided response data using ask
-   * @param {SurfacePrompts} prompt
-   * @param {Array<(string | number)>} args
-   */
-  ask (prompt, ...args) {
-    this.utils.send(prompt, args);
+  // Handle boundaries with special prompts
+  if (answer !== guess) {
+    if (guess === strings.numbers.min) {
+      conv.data.hint = Hints.HIGHER;
+      conv.data.previousGuess = guess;
+      return conv.utils.ask(strings.prompts.min, strings.numbers.min);
+    }
+    if (guess === strings.numbers.max) {
+      conv.data.hint = Hints.LOWER;
+      conv.data.previousGuess = guess;
+      return conv.utils.ask(strings.prompts.max, strings.numbers.max);
+    }
   }
-
-  /**
-   * Send a developer provided response data using tell
-   * @param {SurfacePrompts} prompt
-   * @param {Array<(string | number)>} args
-   */
-  tell (prompt, ...args) {
-    this.utils.send(prompt, args, true);
-  }
-
-  // Below are Dialogflow intent handlers
-
-  [Actions.GENERATE_ANSWER] () {
-    this.data.answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
-    this.data.guessCount = 0;
-    this.data.fallbackCount = 0;
-    this.data.steamSoundCount = 0;
-    this.ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
-  }
-
-  [Actions.CHECK_GUESS] () {
-    const answer = this.data.answer;
-    const guess = parseInt(this.app.getArgument(Parameters.GUESS));
-    const diff = Math.abs(guess - answer);
-    this.data.guessCount++;
-    this.data.fallbackCount = 0;
-    // Check for duplicate guesses
-    if (typeof this.data.previousGuess === 'number' && guess === this.data.previousGuess) {
-      this.data.duplicateCount++;
-      if (this.data.duplicateCount === 1) {
-        if (!this.data.hint || this.data.hint === Hints.NONE) {
-          return this.ask(strings.prompts.sameGuess3, guess);
-        }
-        return this.ask(strings.prompts.sameGuess, guess, this.data.hint);
-      }
-      return this.tell(strings.prompts.sameGuess2, guess);
-    }
-    this.data.duplicateCount = 0;
-    // Check if user isn't following hints
-    if (this.data.hint) {
-      if (this.data.hint === Hints.HIGHER && guess <= this.data.previousGuess) {
-        return this.ask(strings.prompts.wrongHigher, this.data.previousGuess);
-      }
-      if (this.data.hint === Hints.LOWER && guess >= this.data.previousGuess) {
-        return this.ask(strings.prompts.wrongLower, this.data.previousGuess);
-      }
-    }
-    // Handle boundaries with special prompts
-    if (answer !== guess) {
-      if (guess === strings.numbers.min) {
-        this.data.hint = Hints.HIGHER;
-        this.data.previousGuess = guess;
-        return this.ask(strings.prompts.min, strings.numbers.min);
-      }
-      if (guess === strings.numbers.max) {
-        this.data.hint = Hints.LOWER;
-        this.data.previousGuess = guess;
-        return this.ask(strings.prompts.max, strings.numbers.max);
-      }
-    }
-    // Give different responses based on distance from number
-    if (diff > 75) {
-      // Guess is far away from number
-      if (answer > guess) {
-        this.data.hint = Hints.HIGHER;
-        this.data.previousGuess = guess;
-        return this.ask(strings.prompts.reallyColdHigh, guess);
-      }
-      this.data.hint = Hints.LOWER;
-      this.data.previousGuess = guess;
-      return this.ask(strings.prompts.reallyColdLow, guess);
-    }
-    if (diff === 4) {
-      // Guess is getting closer
-      if (answer > guess) {
-        this.data.hint = Hints.NONE;
-        this.data.previousGuess = guess;
-        return this.ask(strings.prompts.highClose);
-      }
-      this.data.hint = Hints.NONE;
-      this.data.previousGuess = guess;
-      return this.ask(strings.prompts.lowClose);
-    }
-    if (diff === 3) {
-      // Guess is even closer
-      if (answer > guess) {
-        this.data.hint = Hints.HIGHER;
-        this.data.previousGuess = guess;
-        if (this.data.steamSoundCount-- <= 0) {
-          this.data.steamSoundCount = STEAM_SOUND_GAP;
-          return this.ask(strings.prompts.highestSteam);
-        }
-        return this.ask(strings.prompts.highest);
-      }
-      this.data.hint = Hints.LOWER;
-      this.data.previousGuess = guess;
-      if (this.data.steamSoundCount-- <= 0) {
-        this.data.steamSoundCount = STEAM_SOUND_GAP;
-        return this.ask(strings.prompts.lowestSteam);
-      }
-      return this.ask(strings.prompts.lowest);
-    }
-    if (diff <= 10 && diff > 4) {
-      // Guess is nearby number
-      if (answer > guess) {
-        this.data.hint = Hints.HIGHER;
-        this.data.previousGuess = guess;
-        return this.ask(strings.prompts.higher, guess);
-      }
-      this.data.hint = Hints.LOWER;
-      this.data.previousGuess = guess;
-      return this.ask(strings.prompts.lower, guess);
-    }
-    // Give hints on which direction to go
+  // Give different responses based on distance from number
+  if (diff > 75) {
+    // Guess is far away from number
     if (answer > guess) {
-      const previousHint = this.data.hint;
-      this.data.hint = Hints.HIGHER;
-      this.data.previousGuess = guess;
-      if (previousHint && previousHint === Hints.HIGHER && diff <= 2) {
-        // Very close to number
-        if (this.data.steamSoundCount-- <= 0) {
-          this.data.steamSoundCount = STEAM_SOUND_GAP;
-          return this.ask(strings.prompts.reallyHotHigh2Steam);
-        }
-        if (diff <= 1) {
-          return this.ask(strings.prompts.reallyHotHigh);
-        }
-        return this.ask(strings.prompts.reallyHotHigh2);
+      conv.data.hint = Hints.HIGHER;
+      conv.data.previousGuess = guess;
+      return conv.utils.ask(strings.prompts.reallyColdHigh, guess);
+    }
+    conv.data.hint = Hints.LOWER;
+    conv.data.previousGuess = guess;
+    return conv.utils.ask(strings.prompts.reallyColdLow, guess);
+  }
+  if (diff === 4) {
+    // Guess is getting closer
+    if (answer > guess) {
+      conv.data.hint = Hints.NONE;
+      conv.data.previousGuess = guess;
+      return conv.utils.ask(strings.prompts.highClose);
+    }
+    conv.data.hint = Hints.NONE;
+    conv.data.previousGuess = guess;
+    return conv.utils.ask(strings.prompts.lowClose);
+  }
+  if (diff === 3) {
+    // Guess is even closer
+    if (answer > guess) {
+      conv.data.hint = Hints.HIGHER;
+      conv.data.previousGuess = guess;
+      if (conv.data.steamSoundCount-- <= 0) {
+        conv.data.steamSoundCount = STEAM_SOUND_GAP;
+        return conv.utils.ask(strings.prompts.highestSteam);
       }
-      return this.ask(strings.prompts.high, guess);
+      return conv.utils.ask(strings.prompts.highest);
     }
-    if (answer < guess) {
-      const previousHint = this.data.hint;
-      this.data.hint = Hints.LOWER;
-      this.data.previousGuess = guess;
-      if (previousHint && previousHint === Hints.LOWER && diff <= 2) {
-        // Very close to number
-        if (this.data.steamSoundCount-- <= 0) {
-          this.data.steamSoundCount = STEAM_SOUND_GAP;
-          return this.ask(strings.prompts.reallyHotLow2Steam);
-        }
-        if (diff <= 1) {
-          return this.ask(strings.prompts.reallyHotLow);
-        }
-        return this.ask(strings.prompts.reallyHotLow2);
+    conv.data.hint = Hints.LOWER;
+    conv.data.previousGuess = guess;
+    if (conv.data.steamSoundCount-- <= 0) {
+      conv.data.steamSoundCount = STEAM_SOUND_GAP;
+      return conv.utils.ask(strings.prompts.lowestSteam);
+    }
+    return conv.utils.ask(strings.prompts.lowest);
+  }
+  if (diff <= 10 && diff > 4) {
+    // Guess is nearby number
+    if (answer > guess) {
+      conv.data.hint = Hints.HIGHER;
+      conv.data.previousGuess = guess;
+      return conv.utils.ask(strings.prompts.higher, guess);
+    }
+    conv.data.hint = Hints.LOWER;
+    conv.data.previousGuess = guess;
+    return conv.utils.ask(strings.prompts.lower, guess);
+  }
+  // Give hints on which direction to go
+  if (answer > guess) {
+    const previousHint = conv.data.hint;
+    conv.data.hint = Hints.HIGHER;
+    conv.data.previousGuess = guess;
+    if (previousHint && previousHint === Hints.HIGHER && diff <= 2) {
+      // Very close to number
+      if (conv.data.steamSoundCount-- <= 0) {
+        conv.data.steamSoundCount = STEAM_SOUND_GAP;
+        return conv.utils.ask(strings.prompts.reallyHotHigh2Steam);
       }
-      return this.ask(strings.prompts.low, guess);
+      if (diff <= 1) {
+        return conv.utils.ask(strings.prompts.reallyHotHigh);
+      }
+      return conv.utils.ask(strings.prompts.reallyHotHigh2);
     }
-    // Guess is same as number
-    const guessCount = this.data.guessCount;
-    this.data.hint = Hints.NONE;
-    this.data.previousGuess = -1;
-    this.app.setContext(Contexts.YES_NO);
-    this.data.guessCount = 0;
-    if (guessCount >= 10) {
-      return this.ask(strings.prompts.winManyTries, answer);
+    return conv.utils.ask(strings.prompts.high, guess);
+  }
+  if (answer < guess) {
+    const previousHint = conv.data.hint;
+    conv.data.hint = Hints.LOWER;
+    conv.data.previousGuess = guess;
+    if (previousHint && previousHint === Hints.LOWER && diff <= 2) {
+      // Very close to number
+      if (conv.data.steamSoundCount-- <= 0) {
+        conv.data.steamSoundCount = STEAM_SOUND_GAP;
+        return conv.utils.ask(strings.prompts.reallyHotLow2Steam);
+      }
+      if (diff <= 1) {
+        return conv.utils.ask(strings.prompts.reallyHotLow);
+      }
+      return conv.utils.ask(strings.prompts.reallyHotLow2);
     }
-    this.ask(strings.prompts.win, answer);
+    return conv.utils.ask(strings.prompts.low, guess);
   }
-
-  [Actions.QUIT] () {
-    this.tell(strings.prompts.reveal, this.data.answer);
+  // Guess is same as number
+  const guessCount = conv.data.guessCount;
+  conv.data.hint = Hints.NONE;
+  conv.data.previousGuess = -1;
+  conv.contexts.set(Contexts.YES_NO, 5);
+  conv.data.guessCount = 0;
+  if (guessCount >= 10) {
+    return conv.utils.ask(strings.prompts.winManyTries, answer);
   }
+  conv.utils.ask(strings.prompts.win, answer);
+});
 
-  [Actions.PLAY_AGAIN_YES] () {
-    this.data.answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
-    this.data.guessCount = 0;
-    this.data.fallbackCount = 0;
-    this.data.steamSoundCount = 0;
-    this.ask(strings.prompts.re, strings.numbers.min, strings.numbers.max);
+app.intent('quit_game', (conv) => {
+  conv.utils.close(strings.prompts.reveal, conv.data.answer);
+});
+
+app.intent('play-again-yes', (conv) => {
+  conv.data.answer =
+    strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
+  conv.data.guessCount = 0;
+  conv.data.fallbackCount = 0;
+  conv.data.steamSoundCount = 0;
+  conv.utils.ask(strings.prompts.re, strings.numbers.min, strings.numbers.max);
+});
+
+app.intent('play_again_no', (conv) => {
+  conv.contexts.set(Contexts.GAME, 1);
+  conv.utils.close(strings.prompts.quit);
+});
+
+const defaultFallback = (conv) => {
+  console.log(conv.data.fallbackCount);
+  if (typeof conv.data.fallbackCount !== 'number') {
+    conv.data.fallbackCount = 0;
   }
-
-  [Actions.PLAY_AGAIN_NO] () {
-    this.app.setContext(Contexts.GAME, 1);
-    this.tell(strings.prompts.quit);
+  conv.data.fallbackCount++;
+  // Provide two prompts before ending game
+  if (conv.data.fallbackCount === 1) {
+    conv.contexts.set(Contexts.DONE_YES_NO, 5);
+    return conv.utils.ask(strings.prompts.fallback);
   }
+  conv.utils.close(strings.prompts.fallback2);
+};
 
-  [Actions.DEFAULT_FALLBACK] () {
-    console.log(this.data.fallbackCount);
-    if (typeof this.data.fallbackCount !== 'number') {
-      this.data.fallbackCount = 0;
-    }
-    this.data.fallbackCount++;
-    // Provide two prompts before ending game
-    if (this.data.fallbackCount === 1) {
-      this.app.setContext(Contexts.DONE_YES_NO);
-      return this.ask(strings.prompts.fallback);
-    }
-    this.tell(strings.prompts.fallback2);
+app.intent('Default Fallback Intent', defaultFallback);
+
+app.intent('Unknown-deeplink', (conv) => {
+  const answer =
+    strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
+  conv.data.answer = answer;
+  conv.data.guessCount = 0;
+  conv.data.fallbackCount = 0;
+  conv.data.steamSoundCount = 0;
+  conv.contexts.set(Contexts.GAME, 1);
+  const text = conv.query;
+  if (!text) {
+    return defaultFallback(conv);
   }
-
-  [Actions.UNKNOWN_DEEPLINK] () {
-    const answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
-    this.data.answer = answer;
-    this.data.guessCount = 0;
-    this.data.fallbackCount = 0;
-    this.data.steamSoundCount = 0;
-    this.app.setContext(Contexts.GAME, 1);
-    const text = this.app.getRawInput();
-    if (!text) {
-      /** @type {*} */
-      const map = this;
-      return map[Actions.DEFAULT_FALLBACK]();
-    }
-    // Handle "talk to number genie about frogs" by counting
-    // number of letters in the word as the guessed number
-    const numberOfLetters = text.length;
-    if (numberOfLetters < answer) {
-      return this.ask(strings.prompts.deeplink, text.toUpperCase(), numberOfLetters, numberOfLetters);
-    }
-    if (numberOfLetters > answer) {
-      return this.ask(strings.prompts.deeplink2, text.toUpperCase(), numberOfLetters, numberOfLetters);
-    }
-    this.data.hint = Hints.NONE;
-    this.data.previousGuess = -1;
-    this.app.setContext(Contexts.YES_NO);
-    this.ask(strings.prompts.deeplink3, text.toUpperCase(), numberOfLetters, answer);
+  // Handle "talk to number genie about frogs" by counting
+  // number of letters in the word as the guessed number
+  const numberOfLetters = text.length;
+  if (numberOfLetters < answer) {
+    return conv.utils.ask(
+      strings.prompts.deeplink,
+      text.toUpperCase(),
+      numberOfLetters,
+      numberOfLetters
+    );
   }
-
-  [Actions.NUMBER_DEEPLINK] () {
-    this.data.guessCount = 0;
-    this.data.fallbackCount = 0;
-    this.data.steamSoundCount = 0;
-    this.app.setContext(Contexts.GAME, 1);
-    // Easter egg to set the answer for demos
-    // Handle "talk to number genie about 55"
-    this.data.answer = parseInt(this.app.getArgument(Parameters.NUMBER));
-    // Check if answer is in bounds
-    if (this.data.answer >= strings.numbers.min && this.data.answer <= strings.numbers.max) {
-      return this.ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
-    }
-    // Give a different prompt if answer is out of bounds
-    this.data.answer = strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
-    this.ask(strings.prompts.outOfBoundsDeeplink, strings.numbers.min, strings.numbers.max);
+  if (numberOfLetters > answer) {
+    return conv.utils.ask(
+      strings.prompts.deeplink2,
+      text.toUpperCase(),
+      numberOfLetters,
+      numberOfLetters
+    );
   }
+  conv.data.hint = Hints.NONE;
+  conv.data.previousGuess = -1;
+  conv.contexts.set(Contexts.YES_NO, 5);
+  conv.utils.ask(
+    strings.prompts.deeplink3,
+    text.toUpperCase(),
+    numberOfLetters,
+    answer
+  );
+});
 
-  [Actions.DONE_YES] () {
-    this.app.setContext(Contexts.GAME, 1);
-    this.tell(strings.prompts.quit);
+app.intent('deep_link_number', (conv) => {
+  conv.data.guessCount = 0;
+  conv.data.fallbackCount = 0;
+  conv.data.steamSoundCount = 0;
+  conv.contexts.set(Contexts.GAME, 1);
+  // Easter egg to set the answer for demos
+  // Handle "talk to number genie about 55"
+  conv.data.answer = parseInt(conv.parameters[Parameters.NUMBER]);
+  // Check if answer is in bounds
+  if (conv.data.answer >= strings.numbers.min &&
+    conv.data.answer <= strings.numbers.max) {
+    return conv.utils
+      .ask(strings.prompts.welcome, strings.numbers.min, strings.numbers.max);
   }
+  // Give a different prompt if answer is out of bounds
+  conv.data.answer =
+    strings.getRandomNumber(strings.numbers.min, strings.numbers.max);
+  conv.utils.ask(
+    strings.prompts.outOfBoundsDeeplink,
+    strings.numbers.min,
+    strings.numbers.max
+  );
+});
 
-  [Actions.DONE_NO] () {
-    this.data.fallbackCount = 0;
-    this.ask(strings.prompts.reAnother);
+app.intent('done_yes', (conv) => {
+  conv.contexts.set(Contexts.GAME, 1);
+  conv.utils.close(strings.prompts.quit);
+});
+
+app.intent('done_no', (conv) => {
+  conv.data.fallbackCount = 0;
+  conv.utils.ask(strings.prompts.reAnother);
+});
+
+app.intent('repeat', (conv) => {
+  const lastResponse = conv.data.lastResponse;
+  if (lastResponse) {
+    // Currently does not use repeat prompt
+    return conv.utils.sendCompiled(lastResponse);
   }
+  conv.utils.ask(strings.prompts.another);
+});
 
-  [Actions.REPEAT] () {
-    const lastResponse = this.data.lastResponse;
-    if (lastResponse) {
-      return this.utils.sendCompiled(lastResponse); // Currently does not use repeat prompt
-    }
-    this.ask(strings.prompts.another);
-  }
-}
+app.intent('no_input', (conv) => {
+  conv.ask(strings.general.noInput[+conv.arguments.get('REPROMPT_COUNT')]);
+});
 
-// HTTP Cloud Function for Firebase handler
-exports.numberGenie = functions.https.onRequest(
-  /** @param {*} res */ (req, res) => new NumberGenie(req, res).run()
-);
+app.fallback((conv) => {
+  conv.ask(`I didn't hear a number. What's your guess?`);
+});
+
+exports.numberGenie = functions.https.onRequest(app);
