@@ -312,6 +312,10 @@ app.intent('deep_link_number', (conv) => {
   );
 });
 
+app.intent('cancel', (conv) => {
+  conv.close(`Ok, until next time then!`);
+});
+
 app.intent('done_yes', (conv) => {
   conv.contexts.set(Contexts.GAME, 1);
   conv.utils.close(strings.prompts.quit);
@@ -339,4 +343,4 @@ app.fallback((conv) => {
   conv.ask(`I didn't hear a number. What's your guess?`);
 });
 
-exports.numberGenie = functions.https.onRequest(app);
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);

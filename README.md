@@ -1,52 +1,59 @@
-# Actions on Google: Number Genie Sample using Node.js and Cloud Functions for Firebase
+# Actions on Google: Number Genie Sample
 
-This guess a number game, called Number Genie, is an action for the Google Assistant.
+This sample demonstrates Actions on Google features for use on Google Assistant,
+including how to steer conversation in a numeric guessing game through the use
+of localization (French and English), deep links, fallbacks, contexts, alongside rich responses -- using the [Node.js client library](https://github.com/actions-on-google/actions-on-google-nodejs)
+and deployed on [Cloud Functions for Firebase](https://firebase.google.com/docs/functions/).
 
-## Localization
-
-This app uses the [i18n-node](https://github.com/mashpie/i18n-node) library to provide
-responses in both French and English. The responses are listed in the `locales` directory.
+This Action uses the [i18n-node](https://github.com/mashpie/i18n-node) library to provide
+responses in both French and English, which are listed in the `locales` directory.
 In each function execution, the `strings.js` `setLocale()` function is called to
 set the i18n-node locale based on the user locale in the incoming request. Prompts are then
 selected by i18n-node from the available languages, defaulting to `en` if the
 user's language is unavailable.
 
-
 ## Setup Instructions
+### Prerequisites
+1. Node.js and NPM
+    + We recommend installing using [NVM](https://github.com/creationix/nvm)
+1. Install the [Firebase CLI](https://developers.google.com/actions/dialogflow/deploy-fulfillment)
+    + We recommend using version 6.5.0, `npm install -g firebase-tools@6.5.0`
+    + Run `firebase login` with your Google account
 
-See the developer guide and release notes at [https://developers.google.com/actions/](https://developers.google.com/actions/) for more details.
+### Configuration
+#### Actions Console
+1. From the [Actions on Google Console](https://console.actions.google.com/), add a new project > **Create Project** > under **More options** > **Conversational**
+1. From the left navigation menu under **Build** > **Actions** > **Add Your First Action** > **BUILD** (this will bring you to the Dialogflow console) > Select language and time zone > **CREATE**.
+1. In the Dialogflow console, go to **Settings** ⚙ > **Export and Import** > **Restore from zip** using the `agent.zip` in this sample's directory.
 
-### Steps
-1. Use the [Actions on Google Console](https://console.actions.google.com) to add a new project with a name of your choosing and click *Create Project*.
-1. Scroll down to the *More Options* section, and click on the *Conversational* card.
-1. On the left navigation menu under *BUILD*, click on *Actions*. Click on *Add Your First Action* and choose your app's language(s).
-1. Select *Custom intent*, click *BUILD*. This will open a Dialogflow console. Click *CREATE*.
-1. Click on the gear icon to see the project settings.
-1. Select *Export and Import*.
-1. Select *Restore from zip*. Follow the directions to restore from the `NumberGenie.zip` file in this repo.
-1. Deploy the fulfillment webhook provided in the `functions` folder using [Google Cloud Functions for Firebase](https://firebase.google.com/docs/functions/) and the static resources needed by the project using [Firebase Hosting](https://firebase.google.com/docs/hosting/):
-    1. Follow the instructions to [install the Firebase CLI](https://firebase.google.com/docs/hosting/quickstart#install-the-firebase-cli).
-    1. Run `firebase init`, and select to configure `Hosting` and `Functions`. Select the project you've previously created in the Actions on Google Console as default project. In the configuration wizard, accept all the default choices.
-    1. Run `firebase deploy` and take note of the endpoint where the fulfillment webhook has been published. It should look like `Function URL (numberGenie): https://${REGION}-${PROJECT}.cloudfunctions.net/numberGenie`. The command will also deploy the static assets at `https://${PROJECT}.firebaseapp.com/`.
-1. Go back to the Dialogflow console and select *Fulfillment* from the left navigation menu. Enable *Webhook*, set the value of *URL* to the `Function URL` from the previous step, then click *Save*.
-1. Select *Integrations* from the left navigation menu and open the *Integration Settings* menu for Actions on Google.
-1. Enable *Auto-preview changes* and Click *Test*. This will open the Actions on Google simulator.
-1. Type `Talk to my test app` in the simulator, or say `OK Google, talk to my test app` to any Actions on Google enabled device signed into your developer account.
+#### Firebase Deployment
+1. On your local machine, in the `functions` directory, run `npm install`
+1. Run `firebase deploy --project {PROJECT_ID}` to deploy the function
+    + To find your **Project ID**: In [Dialogflow console](https://console.dialogflow.com/) under **Settings** ⚙ > **General** tab > **Project ID**.
 
-For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/dialogflow/deploy-fulfillment).
+#### Dialogflow Console
+1. Return to the [Dialogflow Console](https://console.dialogflow.com) > select **Fulfillment** > **Enable** Webhook > Set **URL** to the **Function URL** that was returned after the deploy command > **SAVE**.
+    ```
+    Function URL (dialogflowFirebaseFulfillment): https://${REGION}-${PROJECT_ID}.cloudfunctions.net/dialogflowFirebaseFulfillment
+    ```
+1. From the left navigation menu, click **Integrations** > **Integration Settings** under Google Assistant > Enable **Auto-preview changes** >  **Test** to open the Actions on Google simulator then say or type `Talk to my test app`.
+
+### Running this Sample
++ You can test your Action on any Google Assistant-enabled device on which the Assistant is signed into the same account used to create this project. Just say or type, “OK Google, talk to my test app”.
++ You can also use the Actions on Google Console simulator to test most features and preview on-device behavior.
 
 ## References & Issues
 + Questions? Go to [StackOverflow](https://stackoverflow.com/questions/tagged/actions-on-google), [Assistant Developer Community on Reddit](https://www.reddit.com/r/GoogleAssistantDev/) or [Support](https://developers.google.com/actions/support/).
 + For bugs, please report an issue on Github.
 + Actions on Google [Documentation](https://developers.google.com/actions/extending-the-assistant)
-+ Actions on Google [Codelabs](https://codelabs.developers.google.com/?cat=Assistant).
-+ [Webhook Boilerplate Template](https://github.com/actions-on-google/dialogflow-webhook-boilerplate-nodejs) for Actions on Google.
- 
++ Actions on Google [Codelabs](https://codelabs.developers.google.com/?cat=Assistant)
++ [Webhook Boilerplate Template](https://github.com/actions-on-google/dialogflow-webhook-boilerplate-nodejs) for Actions on Google
+
 ## Make Contributions
 Please read and follow the steps in the [CONTRIBUTING.md](CONTRIBUTING.md).
- 
+
 ## License
 See [LICENSE](LICENSE).
- 
+
 ## Terms
 Your use of this sample is subject to, and by using or downloading the sample files you agree to comply with, the [Google APIs Terms of Service](https://developers.google.com/terms/).
