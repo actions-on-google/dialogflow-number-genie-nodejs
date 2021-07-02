@@ -12,6 +12,8 @@ set the i18n-node locale based on the user locale in the incoming request. Promp
 selected by i18n-node from the available languages, defaulting to `en` if the
 user's language is unavailable.
 
+:warning: This code sample was built using Dialogflow. We now recommend using [Actions Builder or the Actions SDK](https://developers.google.com/assistant/conversational/overview) to develop, test, and deploy Conversational Actions.
+
 ## Setup Instructions
 ### Prerequisites
 1. Node.js and NPM
