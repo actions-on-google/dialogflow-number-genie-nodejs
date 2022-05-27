@@ -1,5 +1,8 @@
 # Actions on Google: Number Genie Sample
 
+*:warning: Warning: Conversational Actions will be deprecated on June 13, 2023. For more information,
+see [Conversational Actions Sunset](https://goo.gle/ca-sunset).*
+
 This sample demonstrates Actions on Google features for use on Google Assistant,
 including how to steer conversation in a numeric guessing game through the use
 of localization (French and English), deep links, fallbacks, contexts, alongside rich responses -- using the [Node.js client library](https://github.com/actions-on-google/actions-on-google-nodejs)
